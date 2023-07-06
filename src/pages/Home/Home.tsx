@@ -22,6 +22,7 @@ interface Cycle {
   task: string
   minutesAmount: number
   startDate: Date
+  interruptedDate?: Date
 }
 
 export function Home() {
@@ -100,36 +101,59 @@ export function Home() {
     reset()
   }
 
+  function handleInterruptCycle() {
+    // anotar a data de quando ele foi interrompido
+    setCycles(
+      cycles.map((cycle) => {
+        if (cycle.id === activeCycleId) {
+          return {
+            ...cycle,
+            interruptedDate: new Date()
+          }
+        } else {
+          return cycle
+        }
+      })
+    )
+
+    setActiveCycleId(null)
+  }
+
   return (
     <div>
       <form onSubmit={handleSubmit(handleCreateNewCycle)}>
-        <div>
-          <label htmlFor="task">I&apos;m going to work on</label>
-          <input
-            id="task"
-            list="task-suggestions"
-            placeholder="Name your project"
-            {...register('task')}
-          />
-          <datalist id="task-suggestions">
-            <option value="Project 1" />
-            <option value="Project 2" />
-            <option value="Project 3" />
-          </datalist>
+        {activeCycle !== undefined ? (
+          <h1>{activeCycle.task}</h1>
+        ) : (
+          <div>
+            <label htmlFor="task">I&apos;m going to work on</label>
+            <input
+              id="task"
+              list="task-suggestions"
+              placeholder="Name your project"
+              autoFocus
+              {...register('task')}
+            />
+            <datalist id="task-suggestions">
+              <option value="Project 1" />
+              <option value="Project 2" />
+              <option value="Project 3" />
+            </datalist>
 
-          <label htmlFor="minutesAmount">for</label>
-          <input
-            type="number"
-            id="minutesAmount"
-            placeholder="00"
-            step={5}
-            min={5}
-            max={60}
-            {...register('minutesAmount', { valueAsNumber: true })}
-          />
+            <label htmlFor="minutesAmount">for</label>
+            <input
+              type="number"
+              id="minutesAmount"
+              placeholder="00"
+              step={5}
+              min={5}
+              max={60}
+              {...register('minutesAmount', { valueAsNumber: true })}
+            />
 
-          <span>minutes.</span>
-        </div>
+            <span>minutes.</span>
+          </div>
+        )}
 
         <div>
           <span>{minutes[0]}</span>
@@ -139,9 +163,13 @@ export function Home() {
           <span>{seconds[1]}</span>
         </div>
 
-        <button type="submit" disabled={!isValid}>
-          Start
-        </button>
+        {activeCycle != null ? (
+          <button onClick={handleInterruptCycle}>Stop</button>
+        ) : (
+          <button type="submit" disabled={!isValid}>
+            Start
+          </button>
+        )}
       </form>
     </div>
   )
