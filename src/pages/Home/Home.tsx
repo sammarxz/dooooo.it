@@ -3,6 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import zod from 'zod'
 import { differenceInSeconds } from 'date-fns'
+import useSound from 'use-sound'
+
+import startSfx from '@/assets/sounds/start.mp3'
 
 const newCycleFormValidationSchema = zod.object({
   task: zod.string().min(1, 'Enter the task'),
@@ -22,6 +25,7 @@ interface Cycle {
 }
 
 export function Home() {
+  const [play] = useSound(startSfx)
   const [cycles, setCycles] = useState<Cycle[]>([])
   const [activeCycleId, setActiveCycleId] = useState<string | null>(null)
   const [amountPassedSeconds, setAmountPassedSeconds] = useState(0)
@@ -44,15 +48,38 @@ export function Home() {
     return cycles.find((cycle) => cycle.id === activeCycleId)
   }, [cycles, activeCycleId])
 
+  const totalSeconds =
+    activeCycle !== undefined ? activeCycle.minutesAmount * 60 : 0
+  const currentSeconds =
+    activeCycle !== undefined ? totalSeconds - amountPassedSeconds : 0
+
+  const minutesAmount = Math.floor(currentSeconds / 60)
+  const secondsAmount = currentSeconds % 60
+
+  const minutes = String(minutesAmount).padStart(2, '0')
+  const seconds = String(secondsAmount).padStart(2, '0')
+
   useEffect(() => {
+    let interval: number
+
     if (activeCycle !== undefined) {
-      setInterval(() => {
+      interval = setInterval(() => {
         setAmountPassedSeconds(
           differenceInSeconds(new Date(), activeCycle.startDate)
         )
       }, 1000)
     }
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [activeCycle])
+
+  useEffect(() => {
+    if (activeCycle !== undefined) {
+      document.title = `${minutes}:${seconds} - ${activeCycle.task}`
+    }
+  }, [activeCycle, minutes, seconds])
 
   function handleCreateNewCycle(data: NewCycleFormData) {
     const { task, minutesAmount } = data
@@ -67,20 +94,11 @@ export function Home() {
 
     setCycles((state) => [...state, newCycle])
     setActiveCycleId(id)
+    setAmountPassedSeconds(0)
 
+    play()
     reset()
   }
-
-  const totalSeconds =
-    activeCycle !== undefined ? activeCycle.minutesAmount * 60 : 0
-  const currentSeconds =
-    activeCycle !== undefined ? totalSeconds - amountPassedSeconds : 0
-
-  const minutesAmount = Math.floor(currentSeconds / 60)
-  const secondsAmount = currentSeconds % 60
-
-  const minutes = String(minutesAmount).padStart(2, '0')
-  const seconds = String(secondsAmount).padStart(2, '0')
 
   return (
     <div>
