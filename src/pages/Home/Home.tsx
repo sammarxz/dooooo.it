@@ -1,16 +1,43 @@
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import zod from 'zod'
+
+const newCycleFormValidationSchema = zod.object({
+  task: zod.string().min(1, 'Enter the task'),
+  minutesAmount: zod
+    .number()
+    .min(5, 'The cycle needs to be at least 5 minutes')
+    .max(60, 'The cycle needs to be a maximum of 60 minutes')
+})
+
+type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>
+
 export function Home() {
+  const { register, handleSubmit, formState } = useForm<NewCycleFormData>({
+    resolver: zodResolver(newCycleFormValidationSchema),
+    defaultValues: {
+      task: '',
+      minutesAmount: 0
+    }
+  })
+
+  function handleCreateNewCycle(data: NewCycleFormData) {
+    console.log(data)
+  }
+
+  console.log(formState.errors)
+
   return (
     <div>
-      <form action="">
+      <form onSubmit={handleSubmit(handleCreateNewCycle)}>
         <div>
           <label htmlFor="task">I&apos;m going to work on</label>
           <input
-            type="text"
             id="task"
             list="task-suggestions"
             placeholder="Name your project"
+            {...register('task')}
           />
-
           <datalist id="task-suggestions">
             <option value="Project 1" />
             <option value="Project 2" />
@@ -25,6 +52,7 @@ export function Home() {
             step={5}
             min={5}
             max={60}
+            {...register('minutesAmount', { valueAsNumber: true })}
           />
 
           <span>minutes.</span>
