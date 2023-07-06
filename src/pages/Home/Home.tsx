@@ -1,6 +1,8 @@
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import zod from 'zod'
+import { differenceInSeconds } from 'date-fns'
 
 const newCycleFormValidationSchema = zod.object({
   task: zod.string().min(1, 'Enter the task'),
@@ -12,7 +14,18 @@ const newCycleFormValidationSchema = zod.object({
 
 type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>
 
+interface Cycle {
+  id: string
+  task: string
+  minutesAmount: number
+  startDate: Date
+}
+
 export function Home() {
+  const [cycles, setCycles] = useState<Cycle[]>([])
+  const [activeCycleId, setActiveCycleId] = useState<string | null>(null)
+  const [amountPassedSeconds, setAmountPassedSeconds] = useState(0)
+
   const {
     register,
     handleSubmit,
@@ -27,10 +40,47 @@ export function Home() {
     }
   })
 
+  const activeCycle: Cycle | undefined = useMemo(() => {
+    return cycles.find((cycle) => cycle.id === activeCycleId)
+  }, [cycles, activeCycleId])
+
+  useEffect(() => {
+    if (activeCycle !== undefined) {
+      setInterval(() => {
+        setAmountPassedSeconds(
+          differenceInSeconds(new Date(), activeCycle.startDate)
+        )
+      }, 1000)
+    }
+  }, [activeCycle])
+
   function handleCreateNewCycle(data: NewCycleFormData) {
-    console.log(data)
+    const { task, minutesAmount } = data
+    const id = String(new Date().getTime())
+
+    const newCycle: Cycle = {
+      id,
+      task,
+      minutesAmount,
+      startDate: new Date()
+    }
+
+    setCycles((state) => [...state, newCycle])
+    setActiveCycleId(id)
+
     reset()
   }
+
+  const totalSeconds =
+    activeCycle !== undefined ? activeCycle.minutesAmount * 60 : 0
+  const currentSeconds =
+    activeCycle !== undefined ? totalSeconds - amountPassedSeconds : 0
+
+  const minutesAmount = Math.floor(currentSeconds / 60)
+  const secondsAmount = currentSeconds % 60
+
+  const minutes = String(minutesAmount).padStart(2, '0')
+  const seconds = String(secondsAmount).padStart(2, '0')
 
   return (
     <div>
@@ -64,11 +114,11 @@ export function Home() {
         </div>
 
         <div>
-          <span>0</span>
-          <span>0</span>
+          <span>{minutes[0]}</span>
+          <span>{minutes[1]}</span>
           <span>:</span>
-          <span>0</span>
-          <span>0</span>
+          <span>{seconds[0]}</span>
+          <span>{seconds[1]}</span>
         </div>
 
         <button type="submit" disabled={!isValid}>
