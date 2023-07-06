@@ -6,12 +6,13 @@ import { differenceInSeconds } from 'date-fns'
 import useSound from 'use-sound'
 
 import startSfx from '@/assets/sounds/start.mp3'
+import endSfx from '@/assets/sounds/finish.mp3'
 
 const newCycleFormValidationSchema = zod.object({
   task: zod.string().min(1, 'Enter the task'),
   minutesAmount: zod
     .number()
-    .min(5, 'The cycle needs to be at least 5 minutes')
+    .min(1, 'The cycle needs to be at least 5 minutes')
     .max(60, 'The cycle needs to be a maximum of 60 minutes')
 })
 
@@ -23,10 +24,13 @@ interface Cycle {
   minutesAmount: number
   startDate: Date
   interruptedDate?: Date
+  finshedDate?: Date
 }
 
 export function Home() {
-  const [play] = useSound(startSfx)
+  const [playStart] = useSound(startSfx)
+  const [playEnd] = useSound(endSfx)
+
   const [cycles, setCycles] = useState<Cycle[]>([])
   const [activeCycleId, setActiveCycleId] = useState<string | null>(null)
   const [amountPassedSeconds, setAmountPassedSeconds] = useState(0)
@@ -65,9 +69,33 @@ export function Home() {
 
     if (activeCycle !== undefined) {
       interval = setInterval(() => {
-        setAmountPassedSeconds(
-          differenceInSeconds(new Date(), activeCycle.startDate)
+        const secondsDiff = differenceInSeconds(
+          new Date(),
+          activeCycle.startDate
         )
+
+        // set as completed if the time passed is greater than activeCycle total seconds
+        if (secondsDiff >= totalSeconds) {
+          setCycles((state) =>
+            state.map((cycle) => {
+              if (cycle.id === activeCycleId) {
+                return {
+                  ...cycle,
+                  finshedDate: new Date()
+                }
+              } else {
+                return cycle
+              }
+            })
+          )
+
+          setAmountPassedSeconds(totalSeconds)
+          clearInterval(interval)
+          playEnd()
+          setActiveCycleId(null)
+        } else {
+          setAmountPassedSeconds(secondsDiff)
+        }
       }, 1000)
     }
 
@@ -79,6 +107,8 @@ export function Home() {
   useEffect(() => {
     if (activeCycle !== undefined) {
       document.title = `${minutes}:${seconds} - ${activeCycle.task}`
+    } else {
+      document.title = 'Time it - Free time tracking app'
     }
   }, [activeCycle, minutes, seconds])
 
@@ -97,14 +127,14 @@ export function Home() {
     setActiveCycleId(id)
     setAmountPassedSeconds(0)
 
-    play()
+    playStart()
     reset()
   }
 
   function handleInterruptCycle() {
     // anotar a data de quando ele foi interrompido
-    setCycles(
-      cycles.map((cycle) => {
+    setCycles((state) =>
+      state.map((cycle) => {
         if (cycle.id === activeCycleId) {
           return {
             ...cycle,
@@ -146,7 +176,7 @@ export function Home() {
               id="minutesAmount"
               placeholder="00"
               step={5}
-              min={5}
+              min={1}
               max={60}
               {...register('minutesAmount', { valueAsNumber: true })}
             />
