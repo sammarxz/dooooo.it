@@ -7,9 +7,11 @@ import { DefaultLayout } from '@/layout/DefaultLayout'
 
 import { Dashboard, Home } from '@/pages'
 
+import { theme } from '@/theme'
+
 function App() {
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <TaskContextProvider>
         <BrowserRouter>
           <Routes>

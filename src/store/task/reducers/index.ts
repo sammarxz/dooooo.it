@@ -2,8 +2,7 @@ export {
   ActionTypes,
   type AddTaskAction,
   type StartTimerAction,
-  type StopTimerAction,
-  type ToggleTaskAction
+  type StopTimerAction
 } from './actions'
 export {
   taskReducer,

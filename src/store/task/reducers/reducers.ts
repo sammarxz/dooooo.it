@@ -3,10 +3,12 @@ import { differenceInSeconds } from 'date-fns'
 
 import {
   ActionTypes,
+  type DeleteTaskAction,
   type AddTaskAction,
   type StartTimerAction,
   type StopTimerAction,
-  type ToggleTaskAction
+  type UpdateTaskAction,
+  type ReorderTasksAction
 } from './actions'
 
 export interface TaskData {
@@ -26,9 +28,11 @@ export interface TaskState {
 
 export type TaskAction =
   | AddTaskAction
-  | ToggleTaskAction
   | StartTimerAction
   | StopTimerAction
+  | DeleteTaskAction
+  | UpdateTaskAction
+  | ReorderTasksAction
 
 export function taskReducer(state: TaskState, action: TaskAction) {
   switch (action.type) {
@@ -47,18 +51,28 @@ export function taskReducer(state: TaskState, action: TaskAction) {
         ...state,
         tasks: [...state.tasks, newTask]
       }
-    case ActionTypes.TOGGLE_TASK:
+    case ActionTypes.UPDATE_TASK:
       return {
         ...state,
         tasks: state.tasks.map((task) => {
-          if (task.id === action.payload.id) {
+          if (task.id === action.payload.task.id) {
             return {
               ...task,
-              completed: !task.completed
+              ...action.payload.task
             }
           }
           return task
         })
+      }
+    case ActionTypes.DELETE_TASK:
+      return {
+        ...state,
+        tasks: state.tasks.filter((task) => task.id !== action.payload.id)
+      }
+    case ActionTypes.REORDER_TASKS:
+      return {
+        ...state,
+        tasks: action.payload.tasks
       }
     case ActionTypes.START_TIMER:
       const activeTask = state.tasks.find(
