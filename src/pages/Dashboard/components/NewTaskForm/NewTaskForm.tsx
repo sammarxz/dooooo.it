@@ -1,6 +1,9 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Box, Button, Icon, Input, useBoolean } from '@chakra-ui/react'
 import zod from 'zod'
+import { LuPlus } from 'react-icons/lu'
+import { AnimatePresence, motion } from 'framer-motion'
 
 import { useTask } from '@/hooks'
 
@@ -14,6 +17,7 @@ const newTaskFormValidationSchema = zod.object({
 
 export function NewTaskForm() {
   const { dispatch } = useTask()
+  const [showForm, setShowForm] = useBoolean()
 
   const {
     register,
@@ -35,20 +39,70 @@ export function NewTaskForm() {
         payload: data
       })
       reset()
+      setShowForm.off()
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(handleCreateNewTask)}>
-      <div>
-        <label htmlFor="task">Task: </label>
-        <input
-          id="task"
-          placeholder="Task name"
-          autoFocus
-          {...register('description')}
-        />
-      </div>
-    </form>
+    <AnimatePresence>
+      {showForm ? (
+        <Box
+          as={motion.div}
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: 1,
+            transition: {
+              duration: 0.6
+            }
+          }}
+          exit={{
+            opacity: 0,
+            transition: {
+              duration: 0.6
+            }
+          }}
+          w="full"
+        >
+          <Box as="form" onSubmit={handleSubmit(handleCreateNewTask)} w="full">
+            <Input
+              id="task"
+              placeholder="Task name"
+              w="full"
+              autoFocus
+              colorScheme="brand"
+              {...register('description')}
+              onBlur={setShowForm.off}
+            />
+          </Box>
+        </Box>
+      ) : (
+        <Button
+          as={motion.button}
+          variant="unstyled"
+          onClick={setShowForm.on}
+          fontWeight="normal"
+          color="gray.400"
+          _hover={{ color: 'brand.500' }}
+          w="full"
+          textAlign="left"
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: 1,
+            transition: {
+              duration: 0.6
+            }
+          }}
+          exit={{
+            opacity: 0,
+            transition: {
+              duration: 0.6
+            }
+          }}
+        >
+          <Icon as={LuPlus} mr={2} color="brand.500" />
+          Add Task
+        </Button>
+      )}
+    </AnimatePresence>
   )
 }
