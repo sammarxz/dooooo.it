@@ -105,7 +105,7 @@ export function Task({ section, task }: TaskProps) {
         align="center"
         w="full"
         bg="white"
-        py={2}
+        py={[2, 4]}
         borderBottom="1px"
         borderColor="gray.100"
         initial={{ opacity: 0 }}
@@ -117,7 +117,7 @@ export function Task({ section, task }: TaskProps) {
             icon={<LuGripVertical />}
             aria-label="reorder task"
             variant="unstyled"
-            fontSize="lg"
+            fontSize={['md', 'lg']}
             color="gray.300"
             cursor="grab"
             display="flex"
@@ -136,7 +136,7 @@ export function Task({ section, task }: TaskProps) {
             <Editable
               defaultValue={description}
               onSubmit={handleUpdateTask}
-              fontSize="lg"
+              fontSize={['md', 'lg']}
             >
               <EditablePreview fontWeight="medium" />
               <Input
@@ -159,7 +159,7 @@ export function Task({ section, task }: TaskProps) {
             <IconButton
               icon={<IoStop />}
               rounded="full"
-              fontSize="md"
+              fontSize={['sm', 'md']}
               aria-label="stop task"
               colorScheme="brand"
               onClick={handleStopTimer}
