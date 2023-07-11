@@ -83,6 +83,7 @@ export function AddTask({ section }: AddTaskProps) {
           variant="unstyled"
           onClick={setShowForm.on}
           fontWeight="normal"
+          fontSize={['sm', 'md']}
           color="gray.400"
           _hover={{ color: 'brand.500' }}
           w="full"

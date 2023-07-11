@@ -8,7 +8,7 @@ export function Dashboard() {
   const { state } = useAppContext()
 
   return (
-    <VStack spacing={16} align="flex-start">
+    <VStack spacing={[12, 16]} align="flex-start">
       <Header title="Project 1" />
       <Box as={AnimatePresence} w="full">
         {state.sections.map((section) => (

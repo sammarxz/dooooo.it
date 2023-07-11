@@ -96,11 +96,11 @@ export function Section({ section }: SectionProps) {
 
   return (
     <>
-      <VStack spacing={4} align="flex-start" w="full">
+      <VStack spacing={[2, 4]} align="flex-start" w="full">
         <Editable
           defaultValue={section.title}
           onSubmit={handleUpdateSection}
-          fontSize="3xl"
+          fontSize={['lg', '3xl']}
           isPreviewFocusable={false}
           display="flex"
           flex={1}
@@ -108,6 +108,7 @@ export function Section({ section }: SectionProps) {
           justifyContent="space-between"
           alignItems="center"
           gap={4}
+          startWithEditView={true}
         >
           <EditablePreview fontWeight="bold" color="brand.500" />
           <Input
@@ -115,7 +116,7 @@ export function Section({ section }: SectionProps) {
             variant="unstyled"
             boxShadow="none"
             outline="none"
-            size="3xl"
+            fontSize={['lg', '3xl']}
             fontWeight="bold"
             textColor="brand.500"
             _focus={{
@@ -135,7 +136,7 @@ export function Section({ section }: SectionProps) {
             />
           </Flex>
         </Editable>
-        <Flex w="full" direction="column" gap={6}>
+        <Flex w="full" direction="column" gap={[2, 6]}>
           <Reorder.Group
             axis="y"
             onReorder={handleReorder}

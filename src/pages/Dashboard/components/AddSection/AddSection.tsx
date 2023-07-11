@@ -13,7 +13,7 @@ export function AddSection() {
     <Button
       variant="untyled"
       position="relative"
-      py={10}
+      py={[4, 10]}
       px={0}
       w="full"
       fontWeight="regular"

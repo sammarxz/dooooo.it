@@ -8,7 +8,7 @@ export function Header({ title }: HeaderProps) {
   return (
     <Box as="header" w="full">
       <Flex align="center" justify="space-between">
-        <Heading as="h1" size="xl" color="brand.500">
+        <Heading as="h1" size={['md', 'xl']} color="brand.500">
           {title}
         </Heading>
         {/* <Flex align="center">
