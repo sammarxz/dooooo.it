@@ -27,30 +27,27 @@ import useSound from 'use-sound'
 import { IoPlay, IoStop } from 'react-icons/io5'
 import { LuGripVertical, LuMoreVertical, LuTrash } from 'react-icons/lu'
 
-import { useTask, useTimer } from '@/hooks'
+import { useAppContext, useTimer } from '@/hooks'
 
-import {
-  deleteTask,
-  startTimer,
-  stopTimer,
-  updateTask
-} from '@/store/task/reducers/actions'
+import { deleteTask, startTimer, stopTimer, updateTask } from '@/store/task'
 
-import { type TaskData } from '@/store/task/reducers/reducers'
+import { type TaskData } from '@/store/task'
+import { type SectionData } from '@/store/section'
 
 import { Time } from '@/components'
 
 import startSfx from '@/assets/sounds/start.mp3'
 import stopSfx from '@/assets/sounds/stop.mp3'
 interface TaskProps {
+  section: SectionData
   task: TaskData
 }
 
-export function Task({ task }: TaskProps) {
+export function Task({ section, task }: TaskProps) {
   const {
     state: { activeTask },
     dispatch
-  } = useTask()
+  } = useAppContext()
   const dragControls = useDragControls()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -65,7 +62,7 @@ export function Task({ task }: TaskProps) {
 
   function handleToggle() {
     dispatch(
-      updateTask({
+      updateTask(section, {
         ...task,
         completed: !completed
       })
@@ -73,22 +70,22 @@ export function Task({ task }: TaskProps) {
   }
 
   function handleStartTimer() {
-    dispatch(startTimer(id, passedTime))
+    dispatch(startTimer(section, id, passedTime))
     playStartSound()
   }
 
   function handleStopTimer() {
-    dispatch(stopTimer(id))
+    dispatch(stopTimer(section, id))
     playStopSound()
   }
 
   function handleDeleteTask() {
-    dispatch(deleteTask(id))
+    dispatch(deleteTask(section, id))
   }
 
   function handleUpdateTask(nextValue: string) {
     dispatch(
-      updateTask({
+      updateTask(section, {
         ...task,
         description: nextValue
       })
@@ -203,7 +200,8 @@ export function Task({ task }: TaskProps) {
           <ModalCloseButton />
           <ModalBody>
             <Text>
-              Are you sure you want to delete <strong>{description}</strong>?
+              Are you sure you want to delete task:{' '}
+              <strong>{description}</strong>?
             </Text>
           </ModalBody>
 

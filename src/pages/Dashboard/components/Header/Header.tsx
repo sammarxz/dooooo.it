@@ -1,5 +1,4 @@
-import { Box, Flex, Heading, Button } from '@chakra-ui/react'
-import { LuDownload } from 'react-icons/lu'
+import { Box, Flex, Heading } from '@chakra-ui/react'
 
 interface HeaderProps {
   title: string
@@ -12,9 +11,27 @@ export function Header({ title }: HeaderProps) {
         <Heading as="h1" size="xl" color="brand.500">
           {title}
         </Heading>
-        <Button variant="outline" leftIcon={<LuDownload />}>
-          Download PDF Report
-        </Button>
+        {/* <Flex align="center">
+          <IconButton
+            icon={<Icon as={LuListChecks} />}
+            aria-label="View tasks in List mode"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            variant="unstyled"
+            fontSize="xl"
+          />
+          <IconButton
+            icon={<Icon as={LuColumns} />}
+            aria-label="View tasks in column mode"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            variant="unstyled"
+            color="gray.300"
+            fontSize="xl"
+          />
+        </Flex> */}
       </Flex>
     </Box>
   )

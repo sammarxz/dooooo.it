@@ -1,4 +1,5 @@
 export { Header } from './Header'
-export { NewTaskForm } from './NewTaskForm'
-export { Tasks } from './Tasks'
+export { AddTask } from './AddTask'
+export { AddSection } from './AddSection'
+export { Section } from './Section'
 export { Task } from './Task'

@@ -5,18 +5,23 @@ import zod from 'zod'
 import { LuPlus } from 'react-icons/lu'
 import { AnimatePresence, motion } from 'framer-motion'
 
-import { useTask } from '@/hooks'
+import { useAppContext } from '@/hooks'
 
-import { ActionTypes } from '@/store/task/reducers/actions'
+import { addTask } from '@/store/task'
+import { type SectionData } from '@/store/section'
 
-type NewTaskFormData = zod.infer<typeof newTaskFormValidationSchema>
+interface AddTaskProps {
+  section: SectionData
+}
 
-const newTaskFormValidationSchema = zod.object({
+type AddTaskData = zod.infer<typeof AddTaskValidationSchema>
+
+const AddTaskValidationSchema = zod.object({
   description: zod.string().min(1, 'Enter the task')
 })
 
-export function NewTaskForm() {
-  const { dispatch } = useTask()
+export function AddTask({ section }: AddTaskProps) {
+  const { dispatch } = useAppContext()
   const [showForm, setShowForm] = useBoolean()
 
   const {
@@ -24,20 +29,17 @@ export function NewTaskForm() {
     handleSubmit,
     formState: { isValid },
     reset
-  } = useForm<NewTaskFormData>({
+  } = useForm<AddTaskData>({
     mode: 'onChange',
-    resolver: zodResolver(newTaskFormValidationSchema),
+    resolver: zodResolver(AddTaskValidationSchema),
     defaultValues: {
       description: ''
     }
   })
 
-  function handleCreateNewTask(data: NewTaskFormData) {
+  function handleCreateNewTask(data: AddTaskData) {
     if (isValid) {
-      dispatch({
-        type: ActionTypes.ADD_TASK,
-        payload: data
-      })
+      dispatch(addTask(section, data.description))
       reset()
       setShowForm.off()
     }

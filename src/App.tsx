@@ -1,18 +1,18 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ChakraProvider } from '@chakra-ui/react'
 
-import { TaskContextProvider } from '@/store/task'
+import { AppContextProvider } from '@/store'
 
 import { DefaultLayout } from '@/layout/DefaultLayout'
 
-import { Dashboard, Home } from '@/pages'
+import { Home, Dashboard } from '@/pages'
 
 import { theme } from '@/theme'
 
 function App() {
   return (
     <ChakraProvider theme={theme}>
-      <TaskContextProvider>
+      <AppContextProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<DefaultLayout />}>
@@ -21,7 +21,7 @@ function App() {
             </Route>
           </Routes>
         </BrowserRouter>
-      </TaskContextProvider>
+      </AppContextProvider>
     </ChakraProvider>
   )
 }
