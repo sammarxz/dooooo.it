@@ -4,10 +4,8 @@ import {
   EditableInput,
   EditablePreview,
   IconButton,
-  ButtonGroup,
-  useEditableControls,
-  Input,
   VStack,
+  Input,
   Button,
   Modal,
   ModalBody,
@@ -17,10 +15,16 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useDisclosure
+  useDisclosure,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionIcon,
+  AccordionPanel,
+  Box
 } from '@chakra-ui/react'
 import { Reorder, AnimatePresence } from 'framer-motion'
-import { LuEdit, LuCheck, LuX, LuTrash } from 'react-icons/lu'
+import { LuTrash } from 'react-icons/lu'
 
 import { useAppContext } from '@/hooks'
 
@@ -30,47 +34,10 @@ import { type TaskData, reorderTasks } from '@/store/task'
 import { Task } from '../Task'
 import { AddTask } from '../AddTask'
 
+import * as S from './Section.styles'
+
 interface SectionProps {
   section: SectionData
-}
-
-function EditableControls() {
-  const {
-    isEditing,
-    getSubmitButtonProps,
-    getCancelButtonProps,
-    getEditButtonProps
-  } = useEditableControls()
-
-  return isEditing ? (
-    <ButtonGroup justifyContent="center" size="sm">
-      <IconButton
-        aria-label=""
-        icon={<LuCheck />}
-        variant="unstyled"
-        color="green.400"
-        {...getSubmitButtonProps()}
-      />
-      <IconButton
-        aria-label=""
-        icon={<LuX />}
-        variant="unstyled"
-        color="gray.400"
-        {...getCancelButtonProps()}
-      />
-    </ButtonGroup>
-  ) : (
-    <Flex justifyContent="center">
-      <IconButton
-        aria-label=""
-        size="sm"
-        icon={<LuEdit />}
-        variant="unstyled"
-        color="gray.400"
-        {...getEditButtonProps()}
-      />
-    </Flex>
-  )
 }
 
 export function Section({ section }: SectionProps) {
@@ -95,65 +62,93 @@ export function Section({ section }: SectionProps) {
   }
 
   return (
-    <>
-      <VStack spacing={[2, 4]} align="flex-start" w="full">
-        <Editable
-          defaultValue={section.title}
-          onSubmit={handleUpdateSection}
-          fontSize={['lg', '3xl']}
-          isPreviewFocusable={false}
-          display="flex"
-          flex={1}
+    <S.Wrapper>
+      <VStack spacing={4} align="flex-start" w="full">
+        <Accordion
+          reduceMotion
+          allowMultiple
+          defaultIndex={[0]}
           w="full"
-          justifyContent="space-between"
-          alignItems="center"
-          gap={4}
-          startWithEditView={true}
+          p={0}
+          height="auto"
         >
-          <EditablePreview fontWeight="bold" color="brand.500" />
-          <Input
-            as={EditableInput}
-            variant="unstyled"
-            boxShadow="none"
-            outline="none"
-            fontSize={['lg', '3xl']}
-            fontWeight="bold"
-            textColor="brand.500"
-            _focus={{
-              outline: 'none',
-              boxShadow: 'none'
-            }}
-          />
-          <Flex gap={2}>
-            <EditableControls />
-            <IconButton
-              aria-label=""
-              icon={<LuTrash />}
-              variant="unstyled"
-              size="sm"
-              color="gray.400"
-              onClick={onOpen}
-            />
-          </Flex>
-        </Editable>
-        <Flex w="full" direction="column" gap={[2, 6]}>
-          <Reorder.Group
-            axis="y"
-            onReorder={handleReorder}
-            values={section.tasks}
-          >
-            <VStack
-              as={AnimatePresence}
-              initial={false}
-              alignItems="flex-start"
-              w="full"
-            >
-              {section.tasks.map((task) => (
-                <Task key={task.id} section={section} task={task} />
-              ))}
-            </VStack>
-          </Reorder.Group>
-        </Flex>
+          <AccordionItem id={section.id} border="none" alignItems="center">
+            <Flex className="header" justifyContent="space-between" gap={4}>
+              <Flex flex={1} alignItems="center" gap={2}>
+                <AccordionButton
+                  alignItems="center"
+                  justifyContent="center"
+                  w={4}
+                  h={4}
+                  p={0}
+                  _hover={{ bg: 'none' }}
+                >
+                  <AccordionIcon color="brand.500" />
+                </AccordionButton>
+                <Editable
+                  defaultValue={section.title}
+                  onSubmit={handleUpdateSection}
+                  px={2}
+                  rounded="md"
+                  fontWeight="bold"
+                  color="brand.500"
+                  startWithEditView={true}
+                  _hover={{
+                    bg: 'gray.50'
+                  }}
+                  w="full"
+                >
+                  <EditablePreview fontSize={['md', 'lg']} w="full" />
+                  <Input
+                    as={EditableInput}
+                    variant="unstyled"
+                    boxShadow="none"
+                    textColor="brand.500"
+                    outline="none"
+                    size="lg"
+                    px={2}
+                    w="full"
+                    _focus={{
+                      outline: 'none',
+                      boxShadow: 'none',
+                      bg: 'gray.50'
+                    }}
+                  />
+                </Editable>
+              </Flex>
+              <Box className="options">
+                <IconButton
+                  aria-label="delete section"
+                  icon={<LuTrash />}
+                  variant="unstyled"
+                  size="sm"
+                  color="gray.400"
+                  onClick={onOpen}
+                />
+              </Box>
+            </Flex>
+            <AccordionPanel p={0}>
+              <Flex w="full" direction="column" gap={[2, 6]}>
+                <Reorder.Group
+                  axis="y"
+                  onReorder={handleReorder}
+                  values={section.tasks}
+                >
+                  <VStack
+                    as={AnimatePresence}
+                    initial={false}
+                    alignItems="flex-start"
+                    w="full"
+                  >
+                    {section.tasks.map((task) => (
+                      <Task key={task.id} section={section} task={task} />
+                    ))}
+                  </VStack>
+                </Reorder.Group>
+              </Flex>
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
         <AddTask section={section} />
       </VStack>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -178,6 +173,6 @@ export function Section({ section }: SectionProps) {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </>
+    </S.Wrapper>
   )
 }
