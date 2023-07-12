@@ -36,15 +36,15 @@ export function stopTimer(section: SectionData, id: string): StopTimerAction {
 }
 
 export function startTimer(
-  section: SectionData,
-  id: string,
+  taskId: string,
+  sectionId: string,
   timeSpent: number
 ): StartTimerAction {
   return {
     type: TaskActionTypes.START_TIMER,
     payload: {
-      section,
-      id,
+      taskId,
+      sectionId,
       timeSpent
     }
   }

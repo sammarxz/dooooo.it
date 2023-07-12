@@ -61,6 +61,8 @@ export function Section({ section }: SectionProps) {
     dispatch(deleteSection(section.id))
   }
 
+  console.log(section)
+
   return (
     <S.Wrapper>
       <VStack spacing={4} align="flex-start" w="full">

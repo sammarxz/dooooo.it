@@ -46,8 +46,8 @@ export interface ReorderTasksAction {
 export interface StartTimerAction {
   type: TaskActionTypes.START_TIMER
   payload: {
-    section: SectionData
-    id: string
+    taskId: string
+    sectionId: string
     timeSpent: number
   }
 }

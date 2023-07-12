@@ -70,7 +70,7 @@ export function Task({ section, task }: TaskProps) {
   }
 
   function handleStartTimer() {
-    dispatch(startTimer(section, id, passedTime))
+    dispatch(startTimer(task.id, section.id, passedTime))
     playStartSound()
   }
 

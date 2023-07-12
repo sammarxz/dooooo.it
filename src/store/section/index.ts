@@ -1,4 +1,4 @@
-export type { SectionActions } from './section.actions'
+export { type SectionActions, SectionActionTypes } from './section.actions'
 
 export type { SectionData } from './section.data'
 
