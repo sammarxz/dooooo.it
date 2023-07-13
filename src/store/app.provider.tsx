@@ -2,6 +2,7 @@ import { type ReactNode, useReducer } from 'react'
 
 import { AppContext, initialState } from './app.context'
 
+// import { appReducer } from './app.reducer'
 import { appReducer } from './app.reducer'
 
 interface AppContextProviderProps {

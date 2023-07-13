@@ -14,28 +14,29 @@ export function Dashboard() {
       </GridItem>
       <GridItem colStart={5} colSpan={8}>
         <VStack spacing={[12, 16]} align="flex-start">
-          <Header title={state.activeProject?.title} />
-          <Box as={AnimatePresence} w="full">
-            {state.activeProject !== null &&
-            state.activeProject !== undefined ? (
-              <>
-                {state.activeProject.sections.map((section) => (
-                  <Box
-                    as={motion.div}
-                    key={section.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    layout
-                    w="full"
-                  >
-                    <Section section={section} />
-                  </Box>
-                ))}
+          {state.activeProjectIndex !== undefined ? (
+            <>
+              <Header title={state.projects[state.activeProjectIndex].title} />
+              <Box as={AnimatePresence} w="full">
+                {state.projects[state.activeProjectIndex].sections.map(
+                  (section) => (
+                    <Box
+                      as={motion.div}
+                      key={section.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      layout
+                      w="full"
+                    >
+                      <Section section={section} />
+                    </Box>
+                  )
+                )}
                 <AddSection />
-              </>
-            ) : null}
-          </Box>
+              </Box>
+            </>
+          ) : null}
         </VStack>
       </GridItem>
     </Grid>

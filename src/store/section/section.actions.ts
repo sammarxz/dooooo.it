@@ -21,7 +21,7 @@ export interface UpdateSectionAction {
 export interface DeleteSectionAction {
   type: SectionActionTypes.DELETE_SECTION
   payload: {
-    id: string
+    sectionId: string
   }
 }
 

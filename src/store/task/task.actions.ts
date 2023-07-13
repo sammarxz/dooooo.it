@@ -7,8 +7,7 @@ export enum TaskActionTypes {
   DELETE_TASK = 'DELETE_TASK',
   UPDATE_TASK = 'UPDATE_TASK',
   REORDER_TASKS = 'REORDER_TASKS',
-  START_TIMER = 'START_TIMER',
-  STOP_TIMER = 'STOP_TIMER'
+  SET_ACTIVE_TASK = 'SET_ACTIVE_TASK'
 }
 
 export interface AddTaskAction {
@@ -19,19 +18,19 @@ export interface AddTaskAction {
   }
 }
 
-export interface DeleteTaskAction {
-  type: TaskActionTypes.DELETE_TASK
-  payload: {
-    section: SectionData
-    id: string
-  }
-}
-
 export interface UpdateTaskAction {
   type: TaskActionTypes.UPDATE_TASK
   payload: {
-    section: SectionData
+    sectionId: string
     task: TaskData
+  }
+}
+
+export interface DeleteTaskAction {
+  type: TaskActionTypes.DELETE_TASK
+  payload: {
+    sectionId: string
+    id: string
   }
 }
 
@@ -43,20 +42,10 @@ export interface ReorderTasksAction {
   }
 }
 
-export interface StartTimerAction {
-  type: TaskActionTypes.START_TIMER
+export interface SetActiveTaskAction {
+  type: TaskActionTypes.SET_ACTIVE_TASK
   payload: {
-    taskId: string
-    sectionId: string
-    timeSpent: number
-  }
-}
-
-export interface StopTimerAction {
-  type: TaskActionTypes.STOP_TIMER
-  payload: {
-    section: SectionData
-    id: string
+    task?: TaskData
   }
 }
 
@@ -65,5 +54,4 @@ export type TaskActions =
   | DeleteTaskAction
   | UpdateTaskAction
   | ReorderTasksAction
-  | StartTimerAction
-  | StopTimerAction
+  | SetActiveTaskAction

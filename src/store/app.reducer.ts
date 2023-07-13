@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid'
-import { differenceInSeconds } from 'date-fns'
 import { produce } from 'immer'
 
 import { type SectionData, type SectionActions } from './section'
@@ -12,112 +11,81 @@ export type AppActions = SectionActions | TaskActions | ProjectActions
 
 export interface AppState {
   projects: ProjectData[]
-  activeTask?: TaskData | null | undefined
-  activeProject?: ProjectData | null | undefined
+  activeProjectIndex?: number
+  activeTask?: TaskData
 }
 
-function updateSectionInState(
-  state: AppState,
-  updatedSection: SectionData
-): AppState {
-  return produce(state, (draftState) => {
-    const sectionIndex = draftState.projects
-      .flatMap((project) => project.sections)
-      .findIndex((section) => section.id === updatedSection.id)
-
-    if (sectionIndex !== -1) {
-      const projectIndex = draftState.projects.findIndex((project) =>
-        project.sections.some((section) => section.id === updatedSection.id)
-      )
-      draftState.projects[projectIndex].sections[sectionIndex] = updatedSection
-    }
-  })
-}
-
-// TODO: improve abstraction by creating helper functions in their place
-export function appReducer(state: AppState, action: AppActions) {
+export const appReducer = produce((draft: AppState, action: AppActions) => {
   switch (action.type) {
-    // PROJECTS
     case AppActionsTypes.ADD_PROJECT:
-      const newProject = {
+      const newProject: ProjectData = {
         id: uuidv4(),
         title: action.payload.title,
         sections: []
       }
-      return produce(state, (draft) => {
-        draft.projects.push(newProject)
-        draft.activeProject = newProject
-      })
-    case AppActionsTypes.UPDATE_PROJECT:
-      const { project } = action.payload
 
-      return produce(state, (draft) => {
-        const projectIndex = draft.projects.findIndex(
-          (p) => p.id === project.id
-        )
-        if (projectIndex !== -1) {
-          draft.projects[projectIndex] = project
+      draft.projects.push(newProject)
+
+      const projectIndex = draft.projects.findIndex(
+        (project) => project.id === newProject.id
+      )
+
+      draft.activeProjectIndex = projectIndex
+      break
+    case AppActionsTypes.UPDATE_PROJECT: {
+      if (draft.activeProjectIndex !== undefined)
+        draft.projects[draft.activeProjectIndex] = {
+          ...draft.projects[draft.activeProjectIndex],
+          ...action.payload.project
         }
-      })
+      break
+    }
     case AppActionsTypes.DELETE_PROJECT:
-      return produce(state, (draft) => {
-        draft.projects = draft.projects.filter((p) => p.id === project.id)
-        if (
-          draft.activeProject &&
-          draft.activeProject.id === action.payload.id
-        ) {
-          draft.activeProject = null
-        }
-      })
+      draft.projects = draft.projects.filter(
+        (project) => project.id !== action.payload.id
+      )
+      break
     case AppActionsTypes.SET_ACTIVE_PROJECT:
-      return produce(state, (draft) => {
-        draft.activeProject = action.payload.project
-      })
-
-    // SECTIONS
+      draft.activeProjectIndex = draft.projects.findIndex(
+        (project) => project.id === action.payload.project.id
+      )
+      draft.activeTask = undefined
+      break
     case AppActionsTypes.ADD_SECTION:
       const newSection: SectionData = {
         id: uuidv4(),
         title: 'New Section',
         tasks: []
       }
-      return produce(state, (draft) => {
-        if (draft.activeProject) {
-          draft.activeProject.sections.push(newSection)
-          // draft.projects[draft.activeProject.id]
-        }
-      })
-    case AppActionsTypes.DELETE_SECTION:
-      return produce(state, (draft) => {
-        const projectIndex = draft.projects.findIndex((project) => {
-          return project.sections.some(
-            (section) => section.id === action.payload.id
-          )
-        })
+      if (draft.activeProjectIndex !== undefined)
+        draft.projects[draft.activeProjectIndex].sections.push(newSection)
+      break
+    case AppActionsTypes.UPDATE_SECTION:
+      const { section } = action.payload
 
-        if (projectIndex !== -1) {
-          const sectionIndex = draft.projects[projectIndex].sections.findIndex(
-            (section) => section.id === action.payload.id
-          )
+      if (draft.activeProjectIndex !== undefined) {
+        const sectionIndex = draft.projects[
+          draft.activeProjectIndex
+        ].sections.findIndex((s) => s.id === section.id)
 
-          if (sectionIndex !== -1) {
-            draft.projects[projectIndex].sections.splice(sectionIndex, 1)
+        if (sectionIndex !== -1) {
+          draft.projects[draft.activeProjectIndex].sections[sectionIndex] = {
+            ...draft.projects[draft.activeProjectIndex].sections[sectionIndex],
+            ...section
           }
         }
-      })
-    case AppActionsTypes.UPDATE_SECTION:
-      return produce(state, (draft) => {
-        const updatedSection = action.payload.section
-        draft = updateSectionInState(draft, updatedSection)
-      })
-    case AppActionsTypes.REORDER_SECTION:
-      return produce(state, (draft) => {
-        if (draft.activeProject) {
-          draft.activeProject.sections = action.payload.sections
-        }
-      })
+      }
 
-    // TASKS
+      break
+    case AppActionsTypes.DELETE_SECTION:
+      const { sectionId } = action.payload
+
+      if (draft.activeProjectIndex !== undefined)
+        draft.projects[draft.activeProjectIndex].sections = draft.projects[
+          draft.activeProjectIndex
+        ].sections.filter((section) => section.id !== sectionId)
+
+      break
     case AppActionsTypes.ADD_TASK:
       const newTask: TaskData = {
         id: uuidv4(),
@@ -129,141 +97,59 @@ export function appReducer(state: AppState, action: AppActions) {
         createdDate: new Date()
       }
 
-      return produce(state, (draft) => {
-        if (draft.activeProject) {
-          const sectionIndex = draft.activeProject.sections.findIndex(
-            (section) => section.id === action.payload.section.id
-          )
+      if (draft.activeProjectIndex !== undefined) {
+        const sectionIndex = draft.projects[
+          draft.activeProjectIndex
+        ].sections.findIndex((s) => s.id === action.payload.section.id)
 
-          if (sectionIndex !== -1) {
-            draft.activeProject.sections[sectionIndex].tasks.push(newTask)
-          }
+        if (sectionIndex !== -1) {
+          draft.projects[draft.activeProjectIndex].sections[
+            sectionIndex
+          ].tasks.push(newTask)
         }
-      })
+      }
+      break
     case AppActionsTypes.UPDATE_TASK:
-      return produce(state, (draft) => {
-        const { section, task } = action.payload
+      if (draft.activeProjectIndex !== undefined) {
+        const index = draft.projects[
+          draft.activeProjectIndex
+        ].sections.findIndex((s) => s.id === action.payload.sectionId)
 
-        draft = updateSectionInState(draft, section)
-        const updatedSection = draft.projects
-          .flatMap((project) => project.sections)
-          .find((s) => s.id === section.id)
-
-        if (updatedSection) {
-          const taskIndex = updatedSection.tasks.findIndex(
-            (t) => t.id === task.id
-          )
+        if (index !== -1) {
+          const taskIndex = draft.projects[draft.activeProjectIndex].sections[
+            index
+          ].tasks.findIndex((task) => task.id === action.payload.task.id)
 
           if (taskIndex !== -1) {
-            updatedSection.tasks[taskIndex] = task
-          }
-        }
-      })
-    case AppActionsTypes.DELETE_TASK:
-      return produce(state, (draft) => {
-        const sectionIndex = draft.projects
-          .flatMap((project) => project.sections)
-          .findIndex((section) => section.id === action.payload.section.id)
-
-        if (sectionIndex !== -1) {
-          const taskIndex = draft.projects[sectionIndex].sections[
-            sectionIndex
-          ].tasks.findIndex((t) => t.id === action.payload.id)
-
-          if (taskIndex !== -1) {
-            draft.projects[sectionIndex].sections[sectionIndex].tasks.splice(
-              taskIndex,
-              1
-            )
-          }
-        }
-      })
-    case AppActionsTypes.REORDER_TASKS:
-      return produce(state, (draft) => {
-        const { section, tasks } = action.payload
-
-        draft = updateSectionInState(draft, section)
-        const updatedSection = draft.projects
-          .flatMap((project) => project.sections)
-          .find((s) => s.id === section.id)
-
-        if (updatedSection) {
-          updatedSection.tasks = tasks
-        }
-      })
-    case AppActionsTypes.START_TIMER:
-      const { taskId, sectionId, timeSpent } = action.payload
-      return produce(state, (draft) => {
-        const projectIndex = draft.projects.findIndex(
-          (project) => project.id === state.activeProject?.id
-        )
-        if (projectIndex !== -1) {
-          const sectionIndex = draft.projects[projectIndex].sections.findIndex(
-            (section) => section.id === sectionId
-          )
-          if (sectionIndex !== -1) {
-            const taskIndex = draft.projects[projectIndex].sections[
-              sectionIndex
-            ].tasks.findIndex((task) => task.id === taskId)
-            if (taskIndex !== -1) {
-              draft.projects[projectIndex].sections[sectionIndex].tasks[
-                taskIndex
-              ] = {
-                ...draft.projects[projectIndex].sections[sectionIndex].tasks[
-                  taskIndex
-                ],
-                startDate: new Date(),
-                timeSpent
-              }
-              draft.activeTask =
-                draft.projects[projectIndex].sections[sectionIndex].tasks[
-                  taskIndex
-                ]
-            }
-          }
-        }
-      })
-    case AppActionsTypes.STOP_TIMER:
-      return produce(state, (draft) => {
-        const sectionIndex = draft.projects
-          .flatMap((project) => project.sections)
-          .findIndex((section) => section.id === action.payload.section.id)
-
-        if (sectionIndex !== -1) {
-          const taskIndex = draft.projects[sectionIndex].sections[
-            sectionIndex
-          ].tasks.findIndex((task) => task.id === action.payload.id)
-
-          if (
-            taskIndex !== -1 &&
-            draft.projects[sectionIndex].sections[sectionIndex].tasks[taskIndex]
-              .startDate !== null
-          ) {
-            const finishDate = new Date()
-            const timeSpent = differenceInSeconds(
-              finishDate,
-              draft.projects[sectionIndex].sections[sectionIndex].tasks[
-                taskIndex
-              ].startDate as Date
-            )
-
-            draft.projects[sectionIndex].sections[sectionIndex].tasks[
+            draft.projects[draft.activeProjectIndex].sections[index].tasks[
               taskIndex
-            ] = {
-              ...draft.projects[sectionIndex].sections[sectionIndex].tasks[
-                taskIndex
-              ],
-              startDate: null,
-              finishDate,
-              timeSpent:
-                draft.projects[sectionIndex].sections[sectionIndex].tasks[
-                  taskIndex
-                ].timeSpent + timeSpent
-            }
+            ] = action.payload.task
           }
         }
-      })
+      }
+      break
+    case AppActionsTypes.DELETE_TASK:
+      if (draft.activeProjectIndex !== undefined) {
+        const sectionIndex = draft.projects[
+          draft.activeProjectIndex
+        ].sections.findIndex((s) => s.id === action.payload.sectionId)
+
+        const updatedTasks = draft.projects[draft.activeProjectIndex].sections[
+          sectionIndex
+        ].tasks.filter((task) => task.id !== action.payload.id)
+
+        draft.projects[draft.activeProjectIndex].sections[sectionIndex].tasks =
+          updatedTasks
+      }
+      break
+    case AppActionsTypes.SET_ACTIVE_TASK:
+      if (action.payload.task) {
+        draft.activeTask = action.payload.task
+      } else {
+        draft.activeTask = undefined
+      }
+      break
     default:
-      return state
+      return draft
   }
-}
+})

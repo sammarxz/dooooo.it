@@ -2,10 +2,9 @@ import {
   TaskActionTypes,
   type DeleteTaskAction,
   type AddTaskAction,
-  type StartTimerAction,
-  type StopTimerAction,
   type UpdateTaskAction,
-  type ReorderTasksAction
+  type ReorderTasksAction,
+  type SetActiveTaskAction
 } from './task.actions'
 
 import { type SectionData } from '../section'
@@ -25,49 +24,33 @@ export function addTask(
   }
 }
 
-export function stopTimer(section: SectionData, id: string): StopTimerAction {
+export function setActiveTask(task?: TaskData): SetActiveTaskAction {
   return {
-    type: TaskActionTypes.STOP_TIMER,
+    type: TaskActionTypes.SET_ACTIVE_TASK,
     payload: {
-      section,
-      id
+      task
     }
   }
 }
 
-export function startTimer(
-  taskId: string,
-  sectionId: string,
-  timeSpent: number
-): StartTimerAction {
-  return {
-    type: TaskActionTypes.START_TIMER,
-    payload: {
-      taskId,
-      sectionId,
-      timeSpent
-    }
-  }
-}
-
-export function deleteTask(section: SectionData, id: string): DeleteTaskAction {
+export function deleteTask(sectionId: string, id: string): DeleteTaskAction {
   return {
     type: TaskActionTypes.DELETE_TASK,
     payload: {
-      section,
+      sectionId,
       id
     }
   }
 }
 
 export function updateTask(
-  section: SectionData,
+  sectionId: string,
   task: TaskData
 ): UpdateTaskAction {
   return {
     type: TaskActionTypes.UPDATE_TASK,
     payload: {
-      section,
+      sectionId,
       task
     }
   }
@@ -92,8 +75,7 @@ export interface TaskState {
 
 export type TaskActions =
   | AddTaskAction
-  | StartTimerAction
-  | StopTimerAction
   | DeleteTaskAction
   | UpdateTaskAction
   | ReorderTasksAction
+  | SetActiveTaskAction

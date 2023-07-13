@@ -30,6 +30,14 @@ const variants = {
   close: { rotate: '45deg' }
 }
 
+function isActiveProject(
+  projects: ProjectData[],
+  project: ProjectData,
+  activeProjectIndex: number
+) {
+  return projects.findIndex((p) => p.id === project.id) === activeProjectIndex
+}
+
 export function Sidebar() {
   const {
     control,
@@ -113,7 +121,11 @@ export function Sidebar() {
                   <Flex gap={2} alignItems="center">
                     <Text
                       fontWeight={
-                        state?.activeProject?.id === project.id
+                        isActiveProject(
+                          state.projects,
+                          project,
+                          state.activeProjectIndex
+                        )
                           ? 'bold'
                           : 'medium'
                       }

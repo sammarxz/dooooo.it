@@ -9,8 +9,8 @@ export interface AppContextType {
 
 export const initialState: AppState = {
   projects: [],
-  activeTask: null,
-  activeProject: null
+  activeProjectIndex: undefined,
+  activeTask: undefined
 }
 
 export const AppContext = createContext<AppContextType>({

@@ -26,10 +26,11 @@ import { Reorder, useDragControls } from 'framer-motion'
 import useSound from 'use-sound'
 import { IoPlay, IoStop } from 'react-icons/io5'
 import { LuGripVertical, LuMoreVertical, LuTrash } from 'react-icons/lu'
+import { differenceInSeconds } from 'date-fns'
 
 import { useAppContext, useTimer } from '@/hooks'
 
-import { deleteTask, startTimer, stopTimer, updateTask } from '@/store/task'
+import { deleteTask, updateTask, setActiveTask } from '@/store/task'
 
 import { type TaskData } from '@/store/task'
 import { type SectionData } from '@/store/section'
@@ -62,7 +63,7 @@ export function Task({ section, task }: TaskProps) {
 
   function handleToggle() {
     dispatch(
-      updateTask(section, {
+      updateTask(section.id, {
         ...task,
         completed: !completed
       })
@@ -70,22 +71,47 @@ export function Task({ section, task }: TaskProps) {
   }
 
   function handleStartTimer() {
-    dispatch(startTimer(task.id, section.id, passedTime))
+    dispatch(
+      updateTask(section.id, {
+        ...task,
+        startDate: new Date(),
+        timeSpent: passedTime
+      })
+    )
+
+    dispatch(setActiveTask(task))
+
     playStartSound()
   }
 
   function handleStopTimer() {
-    dispatch(stopTimer(section, id))
+    if (task.startDate !== null) {
+      const finishDate = new Date()
+      const timeSpent = differenceInSeconds(finishDate, task.startDate)
+
+      dispatch(
+        updateTask(section.id, {
+          ...task,
+          startDate: null,
+          finishDate,
+          timeSpent: task.timeSpent + timeSpent
+        })
+      )
+    }
+
+    dispatch(setActiveTask())
+
     playStopSound()
   }
 
   function handleDeleteTask() {
-    dispatch(deleteTask(section, id))
+    dispatch(deleteTask(section.id, id))
+    onClose()
   }
 
   function handleUpdateTask(nextValue: string) {
     dispatch(
-      updateTask(section, {
+      updateTask(section.id, {
         ...task,
         description: nextValue
       })

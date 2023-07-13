@@ -23,11 +23,11 @@ export function updateSection(section: SectionData): UpdateSectionAction {
   }
 }
 
-export function deleteSection(id: string): DeleteSectionAction {
+export function deleteSection(sectionId: string): DeleteSectionAction {
   return {
     type: SectionActionTypes.DELETE_SECTION,
     payload: {
-      id
+      sectionId
     }
   }
 }

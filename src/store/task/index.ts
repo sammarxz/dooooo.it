@@ -5,8 +5,7 @@ export {
   deleteTask,
   updateTask,
   reorderTasks,
-  startTimer,
-  stopTimer
+  setActiveTask
 } from './task.helpers'
 
 export type { TaskData } from './task.data'
