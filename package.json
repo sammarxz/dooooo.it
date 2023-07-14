@@ -1,7 +1,13 @@
 {
-  "name": "timerit",
-  "private": true,
-  "version": "0.0.0",
+  "name": "dooooo.it",
+  "description": "Simple task manager with ContextAPI and useReducer",
+  "author": {
+    "email": "sammarxz@protonmail.com", 
+    "name": "Sam Marxz", 
+    "url": "https://github.com/sammarxz"
+  },
+  "private": false,
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
