@@ -4,13 +4,15 @@ export enum ProjectActionTypes {
   ADD_PROJECT = 'ADD_PROJECT',
   DELETE_PROJECT = 'DELETE_PROJECT',
   UPDATE_PROJECT = 'UPDATE_PROJECT',
-  SET_ACTIVE_PROJECT = 'SET_ACTIVE_PROJECT'
+  SET_ACTIVE_PROJECT = 'SET_ACTIVE_PROJECT',
+  DELETE_PROJECT_CONTENT = 'DELETE_PROJECT_CONTENT'
 }
 
 export interface AddProjectAction {
   type: ProjectActionTypes.ADD_PROJECT
   payload: {
     title: string
+    emoji: string
   }
 }
 
@@ -35,8 +37,16 @@ export interface SetActiveProjectAction {
   }
 }
 
+export interface DeleteProjectContentAction {
+  type: ProjectActionTypes.DELETE_PROJECT_CONTENT
+  payload: {
+    id: string
+  }
+}
+
 export type ProjectActions =
   | AddProjectAction
   | UpdateProjectAction
   | DeleteProjectAction
   | SetActiveProjectAction
+  | DeleteProjectContentAction

@@ -7,13 +7,6 @@ import {
   VStack,
   Input,
   Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Text,
   useDisclosure,
   Accordion,
@@ -33,6 +26,7 @@ import { Task } from '../Task'
 import { AddTask } from '../AddTask'
 
 import * as S from './Section.styles'
+import { CustomModal } from '@/components'
 
 interface SectionProps {
   section: SectionData
@@ -86,7 +80,7 @@ export function Section({ section }: SectionProps) {
                   rounded="md"
                   fontWeight="bold"
                   color="brand.500"
-                  startWithEditView={true}
+                  // startWithEditView={true}
                   _hover={{
                     bg: 'gray.50'
                   }}
@@ -134,28 +128,23 @@ export function Section({ section }: SectionProps) {
         </Accordion>
         <AddTask section={section} />
       </VStack>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Confirm Delete</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>
-              Are you sure you want to delete section:{' '}
-              <strong>{section.title}</strong>?
-            </Text>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button colorScheme="red" onClick={handleDeleteSection}>
-              Delete
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <CustomModal isOpen={isOpen} onClose={onClose}>
+        <CustomModal.Header>Confirm Delete</CustomModal.Header>
+        <CustomModal.Body>
+          <Text>
+            Are you sure you want to delete section:{' '}
+            <strong>{section.title}</strong>?
+          </Text>
+        </CustomModal.Body>
+        <CustomModal.Footer>
+          <Button mr={3} onClick={onClose}>
+            Close
+          </Button>
+          <Button colorScheme="red" onClick={handleDeleteSection}>
+            Delete
+          </Button>
+        </CustomModal.Footer>
+      </CustomModal>
     </S.Wrapper>
   )
 }

@@ -13,15 +13,7 @@ import {
   MenuList,
   useDisclosure,
   Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  Box
+  Text
 } from '@chakra-ui/react'
 import useSound from 'use-sound'
 import { IoPlay, IoStop } from 'react-icons/io5'
@@ -36,7 +28,7 @@ import { deleteTask, updateTask, setActiveTask } from '@/store/task'
 import { type TaskData } from '@/store/task'
 import { type SectionData } from '@/store/section'
 
-import { Time } from '@/components'
+import { CustomModal, Time } from '@/components'
 
 import startSfx from '@/assets/sounds/start.mp3'
 import stopSfx from '@/assets/sounds/stop.mp3'
@@ -193,7 +185,7 @@ export function Task({ section, task }: TaskProps) {
             aria-label="reorder task"
             variant="unstyled"
             fontSize={['md', 'lg']}
-            color="gray.300"
+            color="gray.400"
             cursor="grab"
             display="flex"
             justifyContent="flex-start"
@@ -260,28 +252,23 @@ export function Task({ section, task }: TaskProps) {
           </LayoutGroup>
         </Stack>
       </Flex>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Confirm Delete</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>
-              Are you sure you want to delete task:{' '}
-              <strong>{description}</strong>?
-            </Text>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button colorScheme="red" onClick={handleDeleteTask}>
-              Delete
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <CustomModal isOpen={isOpen} onClose={onClose}>
+        <CustomModal.Header>Confirm Delete</CustomModal.Header>
+        <CustomModal.Body>
+          <Text>
+            Are you sure you want to delete task: <strong>{description}</strong>
+            ?
+          </Text>
+        </CustomModal.Body>
+        <CustomModal.Footer>
+          <Button mr={3} onClick={onClose}>
+            Close
+          </Button>
+          <Button colorScheme="red" onClick={handleDeleteTask}>
+            Delete
+          </Button>
+        </CustomModal.Footer>
+      </CustomModal>
     </>
   )
 }

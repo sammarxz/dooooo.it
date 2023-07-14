@@ -1,4 +1,5 @@
-import { useForm, Controller } from 'react-hook-form'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import zod from 'zod'
 import {
@@ -15,45 +16,69 @@ import EmojiPicker, {
   Emoji,
   EmojiStyle
 } from 'emoji-picker-react'
-import { memo, useState } from 'react'
+
 import { useAppContext } from '@/hooks'
-import { addProject } from '@/store/project'
+
+import { type ProjectData, addProject } from '@/store/project'
+import { updateProject } from '@/store/project/project.helpers'
 
 const AddProjectValidationSchema = zod.object({
   title: zod.string().min(1, 'Enter project name').max(20)
 })
 
-type AddSectionData = zod.infer<typeof AddProjectValidationSchema>
+type ProjectFormData = zod.infer<typeof AddProjectValidationSchema>
 
 interface AddProjectProps {
+  project?: ProjectData
   onClose: () => void
 }
 
-export const AddProject = memo(function AddProject({
-  onClose
-}: AddProjectProps) {
+export function AddProject({ project, onClose }: AddProjectProps) {
   const {
-    control,
     handleSubmit,
+    register,
     formState: { isValid }
-  } = useForm<AddSectionData>({
+  } = useForm<ProjectFormData>({
     mode: 'onBlur',
     resolver: zodResolver(AddProjectValidationSchema),
     defaultValues: {
-      title: ''
+      title: project?.title ?? ''
     }
   })
-  const [selectedEmoji, setSelectedEmoji] = useState('1f4bb') // 💻
+  const [selectedEmoji, setSelectedEmoji] = useState(
+    project ? project.emoji : '1f4bb'
+  ) // 💻
   const { dispatch } = useAppContext()
 
-  function handleCreateNewProject(data: AddSectionData) {
+  function handleAddProject(data: ProjectFormData) {
+    const newProject = {
+      emoji: selectedEmoji,
+      ...data
+    }
+
+    dispatch(addProject(newProject))
+  }
+
+  function handleUpdateProject(project: ProjectData, data: ProjectFormData) {
+    dispatch(
+      updateProject({
+        ...project,
+        title: data.title,
+        emoji: selectedEmoji
+      })
+    )
+  }
+
+  function handleProjectSubmit(data: ProjectFormData) {
     if (isValid) {
-      const newProject = {
-        emoji: selectedEmoji,
-        ...data
+      if (project) {
+        handleUpdateProject(project, data)
+        onClose()
+        return
       }
 
-      dispatch(addProject(newProject))
+      console.log(data)
+      handleAddProject(data)
       onClose()
     }
   }
@@ -62,12 +87,8 @@ export const AddProject = memo(function AddProject({
     setSelectedEmoji(emojiData.unified)
   }
 
-  function handleClose() {
-    // onClose()
-  }
-
   return (
-    <Flex alignItems="center" gap={4}>
+    <Flex alignItems="center" gap={2}>
       <Menu placement="bottom-start">
         <MenuButton>
           <Box
@@ -77,14 +98,14 @@ export const AddProject = memo(function AddProject({
             display="flex"
             alignItems="center"
             justifyContent="center"
-            emojiStyle={EmojiStyle.GOOGLE}
+            emojiStyle={EmojiStyle.NATIVE}
           />
         </MenuButton>
         <MenuList p={0} border="none">
           <MenuItem p={0}>
             <EmojiPicker
               onEmojiClick={handleEmojiClick}
-              emojiStyle={EmojiStyle.GOOGLE}
+              emojiStyle={EmojiStyle.NATIVE}
               previewConfig={{
                 defaultCaption: 'Pick an emoji for your project!'
               }}
@@ -92,21 +113,15 @@ export const AddProject = memo(function AddProject({
           </MenuItem>
         </MenuList>
       </Menu>
-      <form onSubmit={handleSubmit(handleCreateNewProject)}>
-        <Controller
-          name="title"
-          control={control}
-          render={({ field }) => (
-            <Input
-              placeholder="Project title"
-              variant="unstyled"
-              autoFocus
-              {...field}
-              onBlur={handleClose}
-            />
-          )}
+      <form onSubmit={handleSubmit(handleProjectSubmit)}>
+        <Input
+          placeholder="Project title"
+          variant="unstyled"
+          fontWeight="bold"
+          autoFocus
+          {...register('title')}
         />
       </form>
     </Flex>
   )
-})
+}

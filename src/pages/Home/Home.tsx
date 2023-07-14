@@ -1,85 +1,51 @@
-import { type FormEvent, useState } from 'react'
-
-import { useAppContext } from '@/hooks'
-import { type ProjectData, addProject, setActiveProject } from '@/store/project'
-import { addSection } from '@/store/section'
-
-function isActiveProject(
-  projects: ProjectData[],
-  project: ProjectData,
-  activeProjectIndex: number
-) {
-  return projects.findIndex((p) => p.id === project.id) === activeProjectIndex
-}
+import { CustomModal } from '@/components'
 
 export function Home() {
-  const { state, dispatch } = useAppContext()
-  const [projectName, setProjectName] = useState('')
-
-  function handleAddProject(e: FormEvent) {
-    e.preventDefault()
-
-    dispatch(
-      addProject({
-        title: projectName
-      })
-    )
-
-    setProjectName('')
+  const handleModal1Open = () => {
+    console.log('Modal 1 aberto')
   }
 
-  function handleSetActiveProject(project: ProjectData) {
-    dispatch(setActiveProject(project))
+  const handleModal1Close = () => {
+    console.log('Modal 1 fechado')
   }
 
-  function handleAddSection() {
-    dispatch(addSection())
+  const handleModal2Open = () => {
+    console.log('Modal 2 aberto')
+  }
+
+  const handleModal2Close = () => {
+    console.log('Modal 2 fechado')
   }
 
   return (
     <div>
-      <form onSubmit={handleAddProject}>
-        <input
-          type="text"
-          value={projectName}
-          onChange={(e) => {
-            setProjectName(e.target.value)
-          }}
-          placeholder="nome do projeto"
-        />
-      </form>
+      <CustomModal
+        showModalButtonText="Open Modal 1"
+        modalId="modal1"
+        onOpen={handleModal1Open}
+        onClose={handleModal1Close}
+      >
+        <CustomModal.Header>Modal 1 Header</CustomModal.Header>
+        <p>Modal 1 Content</p>
+        <CustomModal.Footer>
+          <button>Cancel</button>
+          <button>Delete</button>
+        </CustomModal.Footer>
+      </CustomModal>
 
-      <h2>Projetos:</h2>
-
-      <ul>
-        {state.projects.map((project) => (
-          <li key={project.id}>
-            {isActiveProject(
-              state.projects,
-              project,
-              state.activeProjectIndex
-            ) ? (
-              <strong>{project.title}</strong>
-            ) : (
-              <button
-                onClick={() => {
-                  handleSetActiveProject(project)
-                }}
-              >
-                {project.title}
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
-
-      <h2>Seções do projeto</h2>
-      <button onClick={handleAddSection}>Add Section</button>
-      <ul>
-        {state.projects[state.activeProjectIndex].sections.map((section) => (
-          <li key={section.id}>{section.title}</li>
-        ))}
-      </ul>
+      <CustomModal
+        showModalButtonText="Open Modal 2"
+        modalId="modal2"
+        onOpen={handleModal2Open}
+        onClose={handleModal2Close}
+      >
+        <CustomModal.Header>Modal 2 Header</CustomModal.Header>
+        <p>Modal 2 Content</p>
+        <CustomModal.Footer>
+          <button>Cancel</button>
+          <button>Delete</button>
+        </CustomModal.Footer>
+      </CustomModal>
     </div>
   )
 }

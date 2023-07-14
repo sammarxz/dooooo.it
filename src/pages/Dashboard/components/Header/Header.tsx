@@ -1,17 +1,23 @@
-import { Box, Flex, Heading } from '@chakra-ui/react'
+import { Box, Flex, Stack, Heading, IconButton, Icon } from '@chakra-ui/react'
+import { LuListChecks, LuColumns } from 'react-icons/lu'
+import { Emoji, EmojiStyle } from 'emoji-picker-react'
 
 interface HeaderProps {
   title: string
+  emoji: string
 }
 
-export function Header({ title }: HeaderProps) {
+export function Header({ title, emoji }: HeaderProps) {
   return (
     <Box as="header" w="full">
       <Flex align="center" justify="space-between">
-        <Heading as="h1" size={['md', 'xl']} color="brand.500">
-          {title}
-        </Heading>
-        {/* <Flex align="center">
+        <Stack direction="row" gap={4} alignItems="center">
+          <Emoji unified={emoji} emojiStyle={EmojiStyle.NATIVE} />
+          <Heading as="h1" size={['md', 'xl']} color="brand.500">
+            {title}
+          </Heading>
+        </Stack>
+        <Flex align="center">
           <IconButton
             icon={<Icon as={LuListChecks} />}
             aria-label="View tasks in List mode"
@@ -31,7 +37,7 @@ export function Header({ title }: HeaderProps) {
             color="gray.300"
             fontSize="xl"
           />
-        </Flex> */}
+        </Flex>
       </Flex>
     </Box>
   )

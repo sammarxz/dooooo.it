@@ -21,7 +21,10 @@ export function Dashboard() {
         <VStack spacing={[12, 16]} align="flex-start">
           {state.activeProjectIndex !== undefined ? (
             <>
-              <Header title={state.projects[state.activeProjectIndex].title} />
+              <Header
+                title={state.projects[state.activeProjectIndex].title}
+                emoji={state.projects[state.activeProjectIndex].emoji}
+              />
               <TasksProgress
                 project={state.projects[state.activeProjectIndex]}
               />
