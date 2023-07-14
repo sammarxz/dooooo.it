@@ -8,3 +8,5 @@ export {
   reorderSection,
   updateSection
 } from './section.helpers'
+
+export { sectionReducer } from './section.reducer'

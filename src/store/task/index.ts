@@ -9,3 +9,5 @@ export {
 } from './task.helpers'
 
 export type { TaskData } from './task.data'
+
+export { taskReducer } from './task.reducer'

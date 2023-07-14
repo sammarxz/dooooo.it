@@ -7,6 +7,8 @@ import { useAppContext } from '@/hooks'
 export function Dashboard() {
   const { state } = useAppContext()
 
+  console.log(state)
+
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={4}>
       <GridItem colSpan={3}>
