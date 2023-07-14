@@ -23,13 +23,11 @@ import {
   AccordionPanel,
   Box
 } from '@chakra-ui/react'
-import { Reorder, AnimatePresence } from 'framer-motion'
 import { LuTrash } from 'react-icons/lu'
 
 import { useAppContext } from '@/hooks'
 
 import { updateSection, type SectionData, deleteSection } from '@/store/section'
-import { type TaskData, reorderTasks } from '@/store/task'
 
 import { Task } from '../Task'
 import { AddTask } from '../AddTask'
@@ -43,10 +41,6 @@ interface SectionProps {
 export function Section({ section }: SectionProps) {
   const { dispatch } = useAppContext()
   const { isOpen, onOpen, onClose } = useDisclosure()
-
-  function handleReorder(tasks: TaskData[]) {
-    dispatch(reorderTasks(section, tasks))
-  }
 
   function handleUpdateSection(nextValue: string) {
     dispatch(
@@ -129,22 +123,11 @@ export function Section({ section }: SectionProps) {
             </Flex>
             <AccordionPanel p={0}>
               <Flex w="full" direction="column" gap={[2, 6]}>
-                <Reorder.Group
-                  axis="y"
-                  onReorder={handleReorder}
-                  values={section.tasks}
-                >
-                  <VStack
-                    as={AnimatePresence}
-                    initial={false}
-                    alignItems="flex-start"
-                    w="full"
-                  >
-                    {section.tasks.map((task) => (
-                      <Task key={task.id} section={section} task={task} />
-                    ))}
-                  </VStack>
-                </Reorder.Group>
+                <VStack alignItems="flex-start" w="full">
+                  {section.tasks.map((task) => (
+                    <Task key={task.id} section={section} task={task} />
+                  ))}
+                </VStack>
               </Flex>
             </AccordionPanel>
           </AccordionItem>

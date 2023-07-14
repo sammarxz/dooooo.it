@@ -1,13 +1,16 @@
 import { Grid, GridItem, Box, VStack } from '@chakra-ui/react'
-import { AnimatePresence, motion } from 'framer-motion'
 
-import { Sidebar, AddSection, Header, Section } from './components'
+import {
+  Sidebar,
+  AddSection,
+  Header,
+  Section,
+  TasksProgress
+} from './components'
 import { useAppContext } from '@/hooks'
 
 export function Dashboard() {
   const { state } = useAppContext()
-
-  console.log(state)
 
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={4}>
@@ -19,24 +22,17 @@ export function Dashboard() {
           {state.activeProjectIndex !== undefined ? (
             <>
               <Header title={state.projects[state.activeProjectIndex].title} />
-              <Box as={AnimatePresence} w="full">
-                {state.projects[state.activeProjectIndex].sections.map(
-                  (section) => (
-                    <Box
-                      as={motion.div}
-                      key={section.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      layout
-                      w="full"
-                    >
-                      <Section section={section} />
-                    </Box>
-                  )
-                )}
-                <AddSection />
-              </Box>
+              <TasksProgress
+                project={state.projects[state.activeProjectIndex]}
+              />
+              {state.projects[state.activeProjectIndex].sections.map(
+                (section) => (
+                  <Box key={section.id} w="full">
+                    <Section section={section} />
+                  </Box>
+                )
+              )}
+              <AddSection />
             </>
           ) : null}
         </VStack>

@@ -20,13 +20,14 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text
+  Text,
+  Box
 } from '@chakra-ui/react'
-import { Reorder, useDragControls } from 'framer-motion'
 import useSound from 'use-sound'
 import { IoPlay, IoStop } from 'react-icons/io5'
 import { LuGripVertical, LuMoreVertical, LuTrash } from 'react-icons/lu'
 import { differenceInSeconds } from 'date-fns'
+import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 
 import { useAppContext, useTimer } from '@/hooks'
 
@@ -49,7 +50,6 @@ export function Task({ section, task }: TaskProps) {
     state: { activeTask },
     dispatch
   } = useAppContext()
-  const dragControls = useDragControls()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const [playStartSound] = useSound(startSfx)
@@ -118,14 +118,66 @@ export function Task({ section, task }: TaskProps) {
     )
   }
 
+  function renderTimerButtons() {
+    if (isActive) {
+      return (
+        <IconButton
+          as={motion.button}
+          icon={<IoStop color="white" />}
+          rounded="full"
+          fontSize={['sm', 'md']}
+          aria-label="stop task"
+          bg="brand.500"
+          _hover={{
+            bg: 'brand.600'
+          }}
+          whileHover={{
+            scale: 1.1,
+            transition: {
+              duration: 0.05,
+              type: 'spring',
+              stiffness: 100
+            }
+          }}
+          whileTap={{
+            scale: 1
+          }}
+          onClick={handleStopTimer}
+        />
+      )
+    }
+
+    return (
+      <IconButton
+        as={motion.button}
+        icon={<IoPlay color="white" />}
+        rounded="full"
+        fontSize="md"
+        aria-label="play task"
+        bg="gray.100"
+        _hover={{
+          bg: 'brand.500'
+        }}
+        whileHover={{
+          scale: 1.1,
+          transition: {
+            duration: 0.05,
+            type: 'spring',
+            stiffness: 100
+          }
+        }}
+        whileTap={{
+          scale: 1
+        }}
+        onClick={handleStartTimer}
+      />
+    )
+  }
+
   return (
     <>
       <Flex
-        as={Reorder.Item}
-        value={task}
         id={task.id}
-        dragListener={false}
-        dragControls={dragControls}
         listStyleType="none"
         justifyContent="space-between"
         align="center"
@@ -134,9 +186,6 @@ export function Task({ section, task }: TaskProps) {
         py={[2, 4]}
         borderBottom="1px"
         borderColor="gray.100"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
       >
         <Flex>
           <IconButton
@@ -148,9 +197,6 @@ export function Task({ section, task }: TaskProps) {
             cursor="grab"
             display="flex"
             justifyContent="flex-start"
-            onPointerDown={(event) => {
-              dragControls.start(event)
-            }}
           />
           <Stack direction="row" spacing={4} align="center">
             <Checkbox
@@ -179,44 +225,39 @@ export function Task({ section, task }: TaskProps) {
             </Editable>
           </Stack>
         </Flex>
-        <Stack direction="row" align="center" gap={4}>
-          <Time time={passedTime} isActive={isActive} />
-          {isActive ? (
-            <IconButton
-              icon={<IoStop />}
-              rounded="full"
-              fontSize={['sm', 'md']}
-              aria-label="stop task"
-              colorScheme="brand"
-              onClick={handleStopTimer}
-            />
-          ) : (
-            <IconButton
-              icon={<IoPlay />}
-              rounded="full"
-              fontSize="md"
-              aria-label="play task"
-              colorScheme="blackAlpha"
-              opacity={0.5}
-              onClick={handleStartTimer}
-            />
-          )}
-          <Menu>
-            <MenuButton
-              as={IconButton}
-              aria-label="Options"
-              icon={<LuMoreVertical />}
-              variant="unstyled"
-              fontSize="lg"
-              size="sm"
-              color="gray.400"
-            />
-            <MenuList minW="0" maxW={160}>
-              <MenuItem icon={<LuTrash />} onClick={onOpen}>
-                Delete Task
-              </MenuItem>
-            </MenuList>
-          </Menu>
+        <Stack direction="row" gap={4} align="center">
+          <LayoutGroup>
+            <motion.div key={'s'}>
+              <Time time={passedTime} isActive={isActive} />
+            </motion.div>
+            <AnimatePresence initial={false}>
+              {!task.completed ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0 }}
+                >
+                  {renderTimerButtons()}
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                aria-label="Options"
+                icon={<LuMoreVertical />}
+                variant="unstyled"
+                fontSize="lg"
+                size="sm"
+                color="gray.400"
+              />
+              <MenuList minW="0" maxW={160}>
+                <MenuItem icon={<LuTrash />} onClick={onOpen}>
+                  Delete Task
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </LayoutGroup>
         </Stack>
       </Flex>
       <Modal isOpen={isOpen} onClose={onClose}>
