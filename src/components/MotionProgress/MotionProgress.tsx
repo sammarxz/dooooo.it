@@ -23,6 +23,7 @@ export function MotionProgress({ value }: MotionProgressProps) {
         bottom={0}
         w="10"
         bg="brand.500"
+        initial={false}
         animate={{
           width: `${value}%`,
           transition: {

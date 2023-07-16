@@ -1,6 +1,7 @@
 import { createContext } from 'react'
 
-import { type AppActions, type AppState } from './app.reducer'
+import { type AppActions } from './app.reducer'
+import { type AppState } from './app.data'
 
 export interface AppContextType {
   state: AppState
@@ -10,7 +11,8 @@ export interface AppContextType {
 export const initialState: AppState = {
   projects: [],
   activeProjectIndex: undefined,
-  activeTask: undefined
+  activeTask: undefined,
+  viewMode: 'list'
 }
 
 export const AppContext = createContext<AppContextType>({

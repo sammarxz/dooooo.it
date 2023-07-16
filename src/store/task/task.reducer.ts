@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { type AppActions, type AppState } from '../app.reducer'
+import { type AppActions } from '../app.reducer'
+import { type AppState } from '../app.data'
 
 import { TaskActionTypes, type TaskData } from '.'
 

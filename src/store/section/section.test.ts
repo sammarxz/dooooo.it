@@ -1,5 +1,7 @@
 import { SectionActionTypes, sectionReducer, type SectionData } from '.'
-import { type AppState, type AppActions } from '../app.reducer'
+
+import { type AppState } from '../app.data'
+import { type AppActions } from '../app.reducer'
 
 test('Add new section to a project', () => {
   const initialState: AppState = {
@@ -11,7 +13,8 @@ test('Add new section to a project', () => {
         sections: []
       }
     ],
-    activeProjectIndex: 0
+    activeProjectIndex: 0,
+    viewMode: 'list'
   }
 
   const action: AppActions = {
@@ -41,7 +44,8 @@ test('Update an existing section', () => {
         sections: [sectionToUpdate]
       }
     ],
-    activeProjectIndex: 0
+    activeProjectIndex: 0,
+    viewMode: 'list'
   }
 
   const updatedSection: SectionData = {
@@ -78,7 +82,8 @@ test('Delete a section from a project', () => {
         sections: [sectionToDelete]
       }
     ],
-    activeProjectIndex: 0
+    activeProjectIndex: 0,
+    viewMode: 'list'
   }
 
   const action: AppActions = {

@@ -1,5 +1,7 @@
 import { TaskActionTypes, type TaskData, taskReducer } from '.'
-import { type AppState, type AppActions } from '../app.reducer'
+
+import { type AppState } from '../app.data'
+import { type AppActions } from '../app.reducer'
 
 test('Add new task to a section', () => {
   const initialState: AppState = {
@@ -17,7 +19,8 @@ test('Add new task to a section', () => {
         ]
       }
     ],
-    activeProjectIndex: 0
+    activeProjectIndex: 0,
+    viewMode: 'list'
   }
 
   const action: AppActions = {
@@ -63,7 +66,8 @@ test('Delete a task from a section', () => {
         ]
       }
     ],
-    activeProjectIndex: 0
+    activeProjectIndex: 0,
+    viewMode: 'list'
   }
 
   const action: AppActions = {
@@ -106,7 +110,8 @@ test('Update a task in a section', () => {
         ]
       }
     ],
-    activeProjectIndex: 0
+    activeProjectIndex: 0,
+    viewMode: 'list'
   }
 
   const updatedTask: TaskData = {
@@ -143,7 +148,8 @@ test('Set active task', () => {
 
   const initialState: AppState = {
     projects: [],
-    activeTask: undefined
+    activeTask: undefined,
+    viewMode: 'list'
   }
 
   const action: AppActions = {

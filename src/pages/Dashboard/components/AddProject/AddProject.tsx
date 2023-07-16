@@ -2,15 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import zod from 'zod'
-import {
-  Flex,
-  Input,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Box
-} from '@chakra-ui/react'
+import { Flex, Input, Menu, MenuButton, MenuList, Box } from '@chakra-ui/react'
 import EmojiPicker, {
   type EmojiClickData,
   Emoji,
@@ -39,7 +31,6 @@ export function AddProject({ project, onClose }: AddProjectProps) {
     register,
     formState: { isValid }
   } = useForm<ProjectFormData>({
-    mode: 'onBlur',
     resolver: zodResolver(AddProjectValidationSchema),
     defaultValues: {
       title: project?.title ?? ''
@@ -77,7 +68,6 @@ export function AddProject({ project, onClose }: AddProjectProps) {
         return
       }
 
-      console.log(data)
       handleAddProject(data)
       onClose()
     }
@@ -102,15 +92,13 @@ export function AddProject({ project, onClose }: AddProjectProps) {
           />
         </MenuButton>
         <MenuList p={0} border="none">
-          <MenuItem p={0}>
-            <EmojiPicker
-              onEmojiClick={handleEmojiClick}
-              emojiStyle={EmojiStyle.NATIVE}
-              previewConfig={{
-                defaultCaption: 'Pick an emoji for your project!'
-              }}
-            />
-          </MenuItem>
+          <EmojiPicker
+            onEmojiClick={handleEmojiClick}
+            emojiStyle={EmojiStyle.NATIVE}
+            previewConfig={{
+              defaultCaption: 'Pick an emoji for your project!'
+            }}
+          />
         </MenuList>
       </Menu>
       <form onSubmit={handleSubmit(handleProjectSubmit)}>

@@ -1,10 +1,12 @@
 import { ProjectActionTypes, projectReducer } from '.'
-import { type AppState, type AppActions } from '../app.reducer'
+import { type AppState } from '../app.data'
+import { type AppActions } from '../app.reducer'
 
 // Test to add a new project
 test('Add new project', () => {
   const initialState: AppState = {
-    projects: []
+    projects: [],
+    viewMode: 'list'
   }
 
   const action: AppActions = {
@@ -34,7 +36,8 @@ test('Update existing project', () => {
         emoji: '📁',
         sections: []
       }
-    ]
+    ],
+    viewMode: 'list'
   }
 
   const action: AppActions = {
@@ -73,7 +76,8 @@ test('Delete project', () => {
         sections: []
       }
     ],
-    activeProjectIndex: 1
+    activeProjectIndex: 1,
+    viewMode: 'list'
   }
 
   const action: AppActions = {
@@ -107,7 +111,8 @@ test('Set active project', () => {
         emoji: '✂️',
         sections: []
       }
-    ]
+    ],
+    viewMode: 'list'
   }
 
   const action: AppActions = {
@@ -149,7 +154,8 @@ test('Delete project content', () => {
           }
         ]
       }
-    ]
+    ],
+    viewMode: 'list'
   }
 
   const action: AppActions = {

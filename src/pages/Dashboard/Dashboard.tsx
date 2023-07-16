@@ -5,12 +5,32 @@ import {
   AddSection,
   Header,
   Section,
-  TasksProgress
+  TasksProgress,
+  Kanban
 } from './components'
 import { useAppContext } from '@/hooks'
 
 export function Dashboard() {
   const { state } = useAppContext()
+  const { projects, activeProjectIndex, viewMode } = state
+
+  function renderContent() {
+    if (viewMode === 'list' && activeProjectIndex !== undefined) {
+      return (
+        <>
+          <TasksProgress project={projects[activeProjectIndex]} />
+          {projects[activeProjectIndex].sections.map((section) => (
+            <Box key={section.id} w="full">
+              <Section section={section} />
+            </Box>
+          ))}
+          <AddSection />
+        </>
+      )
+    }
+
+    return <Kanban />
+  }
 
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={4}>
@@ -19,23 +39,13 @@ export function Dashboard() {
       </GridItem>
       <GridItem colStart={5} colSpan={8}>
         <VStack spacing={[12, 16]} align="flex-start">
-          {state.activeProjectIndex !== undefined ? (
+          {activeProjectIndex !== undefined ? (
             <>
               <Header
-                title={state.projects[state.activeProjectIndex].title}
-                emoji={state.projects[state.activeProjectIndex].emoji}
+                title={projects[activeProjectIndex].title}
+                emoji={projects[activeProjectIndex].emoji}
               />
-              <TasksProgress
-                project={state.projects[state.activeProjectIndex]}
-              />
-              {state.projects[state.activeProjectIndex].sections.map(
-                (section) => (
-                  <Box key={section.id} w="full">
-                    <Section section={section} />
-                  </Box>
-                )
-              )}
-              <AddSection />
+              {renderContent()}
             </>
           ) : null}
         </VStack>
