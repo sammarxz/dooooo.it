@@ -1,3 +1,5 @@
+import { type DropResult } from 'react-beautiful-dnd'
+
 import {
   TaskActionTypes,
   type DeleteTaskAction,
@@ -7,14 +9,9 @@ import {
   type SetActiveTaskAction
 } from './task.actions'
 
-import { type SectionData } from '../section'
-
 import { type TaskData } from './task.data'
 
-export function addTask(
-  section: SectionData,
-  description: string
-): AddTaskAction {
+export function addTask({ section, description }): AddTaskAction {
   return {
     type: TaskActionTypes.ADD_TASK,
     payload: {
@@ -56,15 +53,11 @@ export function updateTask(
   }
 }
 
-export function reorderTasks(
-  section: SectionData,
-  tasks: TaskData[]
-): ReorderTasksAction {
+export function reorderTasks(move: DropResult): ReorderTasksAction {
   return {
     type: TaskActionTypes.REORDER_TASKS,
     payload: {
-      section,
-      tasks
+      move
     }
   }
 }

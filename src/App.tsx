@@ -11,7 +11,7 @@ import { theme } from '@/theme'
 
 function App() {
   return (
-    <ChakraProvider theme={theme}>
+    <ChakraProvider theme={theme} resetCSS>
       <AppContextProvider>
         <BrowserRouter>
           <Routes>

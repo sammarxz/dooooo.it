@@ -1,5 +1,4 @@
 import { TaskActionTypes, type TaskData, taskReducer } from '.'
-
 import { type AppState } from '../app.data'
 import { type AppActions } from '../app.reducer'
 
@@ -163,4 +162,66 @@ test('Set active task', () => {
   taskReducer(nextState, action)
 
   expect(nextState.activeTask).toBe(taskToSetActive)
+})
+
+test('Reorder tasks within a section', () => {
+  const task1: TaskData = {
+    id: 'task1',
+    description: 'Task 1',
+    completed: false,
+    startDate: null,
+    finishDate: null,
+    timeSpent: 0,
+    createdDate: new Date()
+  }
+
+  const task2: TaskData = {
+    id: 'task2',
+    description: 'Task 2',
+    completed: false,
+    startDate: null,
+    finishDate: null,
+    timeSpent: 0,
+    createdDate: new Date()
+  }
+
+  const initialState: AppState = {
+    projects: [
+      {
+        id: 'project1',
+        title: 'Project 1',
+        emoji: '📋',
+        sections: [
+          {
+            id: 'section1',
+            title: 'Section 1',
+            tasks: [task1, task2]
+          }
+        ]
+      }
+    ],
+    activeProjectIndex: 0,
+    viewMode: 'list'
+  }
+
+  const action: AppActions = {
+    type: TaskActionTypes.REORDER_TASKS,
+    payload: {
+      move: {
+        source: { droppableId: 'section1', index: 0 },
+        destination: { droppableId: 'section1', index: 1 },
+        reason: 'DROP',
+        combine: undefined,
+        mode: 'FLUID',
+        draggableId: '',
+        type: ''
+      }
+    }
+  }
+
+  const nextState = { ...initialState }
+  taskReducer(nextState, action)
+
+  expect(nextState.projects[0].sections[0].tasks[0].id).toBe('task2')
+  expect(nextState.projects[0].sections[0].tasks[1].id).toBe('task1')
 })

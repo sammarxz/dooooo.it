@@ -1,13 +1,6 @@
-import { Grid, GridItem, Box, VStack } from '@chakra-ui/react'
+import { Grid, GridItem, VStack } from '@chakra-ui/react'
 
-import {
-  Sidebar,
-  AddSection,
-  Header,
-  Section,
-  TasksProgress,
-  Kanban
-} from './components'
+import { Sidebar, Header, Kanban, List } from './components'
 import { useAppContext } from '@/hooks'
 
 export function Dashboard() {
@@ -15,18 +8,8 @@ export function Dashboard() {
   const { projects, activeProjectIndex, viewMode } = state
 
   function renderContent() {
-    if (viewMode === 'list' && activeProjectIndex !== undefined) {
-      return (
-        <>
-          <TasksProgress project={projects[activeProjectIndex]} />
-          {projects[activeProjectIndex].sections.map((section) => (
-            <Box key={section.id} w="full">
-              <Section section={section} />
-            </Box>
-          ))}
-          <AddSection />
-        </>
-      )
+    if (viewMode === 'list') {
+      return <List />
     }
 
     return <Kanban />
@@ -34,10 +17,13 @@ export function Dashboard() {
 
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-      <GridItem colSpan={3}>
+      <GridItem colSpan={viewMode === 'list' ? 3 : 2}>
         <Sidebar />
       </GridItem>
-      <GridItem colStart={5} colSpan={8}>
+      <GridItem
+        colStart={viewMode === 'list' ? 5 : 4}
+        colSpan={viewMode === 'list' ? 8 : 9}
+      >
         <VStack spacing={[12, 16]} align="flex-start">
           {activeProjectIndex !== undefined ? (
             <>

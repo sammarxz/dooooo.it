@@ -118,8 +118,14 @@ export function Section({ section }: SectionProps) {
             <AccordionPanel p={0}>
               <Flex w="full" direction="column" gap={[2, 6]}>
                 <VStack alignItems="flex-start" w="full">
-                  {section.tasks.map((task) => (
-                    <Task key={task.id} section={section} task={task} />
+                  {section.tasks.map((task, index) => (
+                    <Task
+                      key={task.id}
+                      section={section}
+                      task={task}
+                      index={index}
+                      mode="list"
+                    />
                   ))}
                 </VStack>
               </Flex>

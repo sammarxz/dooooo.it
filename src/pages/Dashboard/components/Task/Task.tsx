@@ -17,9 +17,10 @@ import {
 } from '@chakra-ui/react'
 import useSound from 'use-sound'
 import { IoPlay, IoStop } from 'react-icons/io5'
-import { LuGripVertical, LuMoreVertical, LuTrash } from 'react-icons/lu'
+import { LuMoreVertical, LuTrash } from 'react-icons/lu'
 import { differenceInSeconds } from 'date-fns'
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
+import { Draggable } from 'react-beautiful-dnd'
 
 import { useAppContext, useTimer } from '@/hooks'
 
@@ -35,9 +36,11 @@ import stopSfx from '@/assets/sounds/stop.mp3'
 interface TaskProps {
   section: SectionData
   task: TaskData
+  mode: 'kanban' | 'list'
+  index: number
 }
 
-export function Task({ section, task }: TaskProps) {
+export function Task({ section, task, mode, index }: TaskProps) {
   const {
     state: { activeTask },
     dispatch
@@ -166,92 +169,107 @@ export function Task({ section, task }: TaskProps) {
     )
   }
 
+  const tasksStyleProps =
+    mode === 'kanban'
+      ? {
+          py: 2,
+          border: '1px',
+          rounded: 'md',
+          px: 4
+        }
+      : {
+          py: [2, 4],
+          borderBottom: '1px'
+        }
+
   return (
     <>
-      <Flex
-        id={task.id}
-        listStyleType="none"
-        justifyContent="space-between"
-        align="center"
-        w="full"
-        bg="white"
-        py={[2, 4]}
-        borderBottom="1px"
-        borderColor="gray.100"
-      >
-        <Flex>
-          <IconButton
-            icon={<LuGripVertical />}
-            aria-label="reorder task"
-            variant="unstyled"
-            fontSize={['md', 'lg']}
-            color="gray.400"
-            cursor="grab"
-            display="flex"
-            justifyContent="flex-start"
-          />
-          <Stack direction="row" spacing={4} align="center">
-            <Checkbox
-              colorScheme="brand"
-              size="lg"
-              isChecked={completed}
-              onChange={handleToggle}
-            />
-            <Editable
-              defaultValue={description}
-              onSubmit={handleUpdateTask}
-              fontSize={['md', 'lg']}
-            >
-              <EditablePreview fontWeight="medium" />
-              <Input
-                as={EditableInput}
-                variant="unstyled"
-                boxShadow="none"
-                outline="none"
-                size="lg"
-                _focus={{
-                  outline: 'none',
-                  boxShadow: 'none'
-                }}
-              />
-            </Editable>
-          </Stack>
-        </Flex>
-        <Stack direction="row" gap={4} align="center">
-          <LayoutGroup>
-            <motion.div key={'s'}>
-              <Time time={passedTime} isActive={isActive} />
-            </motion.div>
-            <AnimatePresence initial={false}>
-              {!task.completed ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0 }}
+      <Draggable key={id} draggableId={id} index={index}>
+        {(provided) => (
+          <Flex
+            id={task.id}
+            listStyleType="none"
+            justifyContent="space-between"
+            align="center"
+            w="full"
+            bg="white"
+            {...tasksStyleProps}
+            borderColor="gray.200"
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          >
+            <Flex>
+              <Stack direction="row" spacing={4} align="center">
+                {mode === 'list' ? (
+                  <Checkbox
+                    colorScheme="brand"
+                    size="lg"
+                    isChecked={completed}
+                    onChange={handleToggle}
+                  />
+                ) : null}
+                <Editable
+                  defaultValue={description}
+                  onSubmit={handleUpdateTask}
+                  fontSize={['md', 'lg']}
                 >
-                  {renderTimerButtons()}
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                aria-label="Options"
-                icon={<LuMoreVertical />}
-                variant="unstyled"
-                fontSize="lg"
-                size="sm"
-                color="gray.400"
-              />
-              <MenuList minW="0" maxW={160}>
-                <MenuItem icon={<LuTrash />} onClick={onOpen}>
-                  Delete Task
-                </MenuItem>
-              </MenuList>
-            </Menu>
-          </LayoutGroup>
-        </Stack>
-      </Flex>
+                  <EditablePreview fontWeight="medium" />
+                  <Input
+                    as={EditableInput}
+                    variant="unstyled"
+                    boxShadow="none"
+                    outline="none"
+                    size="lg"
+                    _focus={{
+                      outline: 'none',
+                      boxShadow: 'none'
+                    }}
+                  />
+                </Editable>
+              </Stack>
+            </Flex>
+            <Stack direction="row" gap={4} align="center">
+              <LayoutGroup>
+                {mode === 'list' ? (
+                  <>
+                    <motion.div key={'s'}>
+                      <Time time={passedTime} isActive={isActive} />
+                    </motion.div>
+                    <AnimatePresence initial={false}>
+                      {!task.completed ? (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0 }}
+                        >
+                          {renderTimerButtons()}
+                        </motion.div>
+                      ) : null}
+                    </AnimatePresence>
+                  </>
+                ) : null}
+                <Menu>
+                  <MenuButton
+                    as={IconButton}
+                    aria-label="Options"
+                    icon={<LuMoreVertical />}
+                    variant="unstyled"
+                    fontSize="lg"
+                    size="sm"
+                    color="gray.400"
+                  />
+                  <MenuList minW="0" maxW={160}>
+                    <MenuItem icon={<LuTrash />} onClick={onOpen}>
+                      Delete Task
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
+              </LayoutGroup>
+            </Stack>
+          </Flex>
+        )}
+      </Draggable>
       <CustomModal isOpen={isOpen} onClose={onClose}>
         <CustomModal.Header>Confirm Delete</CustomModal.Header>
         <CustomModal.Body>

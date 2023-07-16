@@ -1,3 +1,5 @@
+import { type DropResult } from 'react-beautiful-dnd'
+
 import { type SectionData } from '../section'
 
 import { type TaskData } from './task.data'
@@ -37,8 +39,7 @@ export interface DeleteTaskAction {
 export interface ReorderTasksAction {
   type: TaskActionTypes.REORDER_TASKS
   payload: {
-    section: SectionData
-    tasks: TaskData[]
+    move: DropResult
   }
 }
 
