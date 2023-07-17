@@ -39,7 +39,12 @@ export function AddTask({ section }: AddTaskProps) {
 
   function handleCreateNewTask(data: AddTaskData) {
     if (isValid) {
-      dispatch(addTask(section, data.description))
+      dispatch(
+        addTask({
+          section,
+          description: data.description
+        })
+      )
       reset()
       setShowForm.off()
     }

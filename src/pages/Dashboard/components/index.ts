@@ -1,7 +1,5 @@
 export { Header } from './Header'
-export { AddTask } from './AddTask'
-export { AddSection } from './AddSection'
-export { Section } from './Section'
+export { AddTask } from './List/components/AddTask'
 export { Task } from './Task'
 export { Sidebar } from './Sidebar'
 export { AddProject } from './AddProject'

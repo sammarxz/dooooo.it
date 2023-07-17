@@ -17,16 +17,23 @@ import {
   Box
 } from '@chakra-ui/react'
 import { LuTrash } from 'react-icons/lu'
+import {
+  DragDropContext,
+  Droppable,
+  type DropResult
+} from 'react-beautiful-dnd'
 
 import { useAppContext } from '@/hooks'
 
 import { updateSection, type SectionData, deleteSection } from '@/store/section'
 
-import { Task } from '../Task'
+import { Task } from '../../../Task'
+
 import { AddTask } from '../AddTask'
 
 import * as S from './Section.styles'
 import { CustomModal } from '@/components'
+import { reorderTasks } from '@/store/task'
 
 interface SectionProps {
   section: SectionData
@@ -47,6 +54,12 @@ export function Section({ section }: SectionProps) {
 
   function handleDeleteSection() {
     dispatch(deleteSection(section.id))
+  }
+
+  function handleDragEnd(move: DropResult) {
+    if (!move.destination) return
+    console.log('teste')
+    dispatch(reorderTasks(move))
   }
 
   return (
@@ -115,21 +128,33 @@ export function Section({ section }: SectionProps) {
                 />
               </Box>
             </Flex>
-            <AccordionPanel p={0}>
-              <Flex w="full" direction="column" gap={[2, 6]}>
-                <VStack alignItems="flex-start" w="full">
-                  {section.tasks.map((task, index) => (
-                    <Task
-                      key={task.id}
-                      section={section}
-                      task={task}
-                      index={index}
-                      mode="list"
-                    />
-                  ))}
-                </VStack>
-              </Flex>
-            </AccordionPanel>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <AccordionPanel p={0}>
+                <Flex w="full" direction="column" gap={[2, 6]}>
+                  <Droppable key={section.id} droppableId={section.id}>
+                    {(provided) => (
+                      <VStack
+                        alignItems="flex-start"
+                        w="full"
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                      >
+                        {section.tasks.map((task, index) => (
+                          <Task
+                            key={task.id}
+                            task={task}
+                            section={section}
+                            index={index}
+                            mode="list"
+                          />
+                        ))}
+                        {provided.placeholder}
+                      </VStack>
+                    )}
+                  </Droppable>
+                </Flex>
+              </AccordionPanel>
+            </DragDropContext>
           </AccordionItem>
         </Accordion>
         <AddTask section={section} />

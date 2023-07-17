@@ -187,7 +187,7 @@ export function Task({ section, task, mode, index }: TaskProps) {
       <Draggable key={id} draggableId={id} index={index}>
         {(provided) => (
           <Flex
-            id={task.id}
+            id={id}
             listStyleType="none"
             justifyContent="space-between"
             align="center"

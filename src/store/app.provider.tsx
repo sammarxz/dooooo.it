@@ -13,23 +13,23 @@ const LOCAL_STORAGE_KEY = '@timerit:state-1.0.0'
 export function AppContextProvider({ children }: AppContextProviderProps) {
   const [state, dispatch] = useReducer(
     appReducer,
-    initialState as never
-    // (initialState) => {
-    //   const storedStateAsJSON = localStorage.getItem(LOCAL_STORAGE_KEY)
+    initialState as never,
+    (initialState) => {
+      const storedStateAsJSON = localStorage.getItem(LOCAL_STORAGE_KEY)
 
-    //   if (storedStateAsJSON) {
-    //     return JSON.parse(storedStateAsJSON)
-    //   }
+      if (storedStateAsJSON) {
+        return JSON.parse(storedStateAsJSON)
+      }
 
-    //   return initialState
-    // }
+      return initialState
+    }
   )
 
-  // useEffect(() => {
-  //   const stateJSON = JSON.stringify(state)
+  useEffect(() => {
+    const stateJSON = JSON.stringify(state)
 
-  //   localStorage.setItem(LOCAL_STORAGE_KEY, stateJSON)
-  // }, [state])
+    localStorage.setItem(LOCAL_STORAGE_KEY, stateJSON)
+  }, [state])
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

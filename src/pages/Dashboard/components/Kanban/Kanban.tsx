@@ -8,7 +8,9 @@ import { Flex, VStack } from '@chakra-ui/react'
 import { useAppContext } from '@/hooks'
 
 import { Task } from '..'
-import { Column } from './Column'
+
+import { Column } from './components'
+
 import { reorderTasks } from '@/store/task'
 
 export function Kanban() {
@@ -28,7 +30,7 @@ export function Kanban() {
         {projects[activeProjectIndex!].sections.map((section) => (
           <Column key={section.id} section={section}>
             <Column.Content>
-              <Droppable key={section.id} droppableId={section.id}>
+              <Droppable droppableId={section.id}>
                 {(provided) => (
                   <VStack
                     align="stretch"

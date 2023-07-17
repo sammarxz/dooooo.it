@@ -1,6 +1,9 @@
 import { useAppContext } from '@/hooks'
-import { AddSection, Section, TasksProgress } from '..'
 import { Box } from '@chakra-ui/react'
+
+import { TasksProgress } from '..'
+
+import { Section, AddSection } from './components'
 
 export function List() {
   const {
