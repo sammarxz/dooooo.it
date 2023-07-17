@@ -5,7 +5,7 @@ import { AppContextProvider } from '@/store'
 
 import { DefaultLayout } from '@/layout/DefaultLayout'
 
-import { Home, Dashboard } from '@/pages'
+import { Dashboard } from '@/pages'
 
 import { theme } from '@/theme'
 
@@ -16,8 +16,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<DefaultLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard />} />
             </Route>
           </Routes>
         </BrowserRouter>
