@@ -1,5 +1,5 @@
 {
-  "name": "dooooo.it",
+  "name": "taskbox",
   "description": "Simple task manager with ContextAPI and useReducer",
   "author": {
     "email": "sammarxz@protonmail.com",
