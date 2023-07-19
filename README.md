@@ -49,7 +49,8 @@ The application will be available at [http://localhost:3000](http://localhost:30
 - [ ] Remove `emojis` from the project
 - [ ] Improve usability adding some design interactions
 - [ ] Put `edit task` as task menu option
-- [ ] Remove React-router
+- [ ] UI improvements
+- [ ] Back-end
 
 ## Contributing
 
